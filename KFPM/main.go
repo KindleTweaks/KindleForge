@@ -1,57 +1,165 @@
 /*
-	KFPM
-	KindleForge Package Manager
+    KFPM
+    KindleForge Package Manager
 
-	Simple Package Installing Solution For KindleForge
+    Simple Package Installing Solution For KindleForge
 */
 
 package main
+
 import (
-	"fmt"
-	"os"
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "os/exec"
+    "strings"
 )
 
+const (
+    registryURL   = "https://raw.githubusercontent.com/polish-penguin-dev/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
+    registryBase  = "https://raw.githubusercontent.com/polish-penguin-dev/KindleForge/refs/heads/master/KFPM/Registry/"
+    installedFile = "/usr/local/KFPM/installed.txt"
+)
+
+type Package struct {
+    Name        string `json:"name"`
+    Uri         string `json:"uri"`
+    Description string `json:"description"`
+    Author      string `json:"author"`
+}
+
 func main() {
-	args := os.Args[1:]
+    args := os.Args[1:]
 
-	if len(args) == 0 {
-		help()
-		return
-	}
+    if len(args) == 0 {
+        help()
+        return
+    }
 
-	switch args[0] {
-	case "-i":
-		if len(args) < 2 {
-			fmt.Println("Error: -i requires a package name")
-			return
-		}
-		pkg := args[1]
-		fmt.Println("Installing", pkg)
+    switch args[0] {
+    case "-i":
+        if len(args) < 2 {
+            fmt.Println("Oops! -i Requires A Package Name!")
+            return
+        }
+        pkg := args[1]
+        if runScript(pkg, "install") {
+            fmt.Println("[KFPM] Install Success!")
+            appendInstalled(pkg)
+        } else {
+            fmt.Println("[KFPM] Install Failure!")
+        }
 
-	case "-r", "-u":
-		if len(args) < 2 {
-			fmt.Println("Error: -r/-u requires a package name")
-			return
-		}
-		pkg := args[1]
-		fmt.Println("Removing", pkg)
+    case "-r", "-u":
+        if len(args) < 2 {
+            fmt.Println("Error: -r/-u Requires A Package Name!")
+            return
+        }
+        pkg := args[1]
+        if runScript(pkg, "uninstall") {
+            fmt.Println("[KFPM] Removal Success!")
+            removeInstalled(pkg)
+        } else {
+            fmt.Println("[KFPM] Removal Failure!")
+        }
 
-	case "-l":
-		fmt.Println("Listing installed packages")
+    case "-l":
+        listInstalled()
 
-	default:
-		fmt.Println("Unknown option:", args[0])
-		help()
-	}
+    case "-a":
+        listAvailable()
+
+    default:
+        fmt.Println("Unknown Option:", args[0])
+        help()
+    }
 }
 
 func help() {
-	fmt.Println(`KindleForge Package Manager
+    fmt.Println(`KindleForge Package Manager
 ====================
 v1.0, made by Penguins184
 
 kfpm -i <package>    Installs Package
 kfpm -r/-u <package> Removes/Uninstalls Package
-kfpm -l              Lists Packages
+kfpm -l              Lists Installed Packages
+kfpm -a              Lists All Available Packages
 `)
+}
+
+func runScript(pkg, action string) bool {
+    url := fmt.Sprintf("%s%s/%s.sh", registryBase, pkg, action)
+    cmd := exec.Command("sh", "-c", "curl -sL "+url+" | sh")
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    err := cmd.Run()
+    return err == nil
+}
+
+func appendInstalled(pkg string) {
+    f, err := os.OpenFile(installedFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+    if err != nil {
+        return
+    }
+    defer f.Close()
+    f.WriteString(pkg + "\n")
+}
+
+func removeInstalled(pkg string) {
+    data, err := os.ReadFile(installedFile)
+    if err != nil {
+        return
+    }
+    lines := strings.Split(string(data), "\n")
+    out := []string{}
+    for _, line := range lines {
+        if line != pkg && line != "" {
+            out = append(out, line)
+        }
+    }
+    os.WriteFile(installedFile, []byte(strings.Join(out, "\n")), 0644)
+}
+
+func listInstalled() {
+    data, err := os.ReadFile(installedFile)
+    if err != nil {
+        fmt.Println("[KFPM] No Installed Packages Found!")
+        return
+    }
+    lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+    if len(lines) == 0 || (len(lines) == 1 && lines[0] == "") {
+        fmt.Println("[KFPM] No Installed Packages Found!")
+        return
+    }
+    fmt.Println("Installed Packages:")
+    for _, line := range lines {
+        if line != "" {
+            fmt.Println(" -", line)
+        }
+    }
+}
+
+func listAvailable() {
+    resp, err := http.Get(registryURL)
+    if err != nil {
+        fmt.Println("[KFPM] Failed To Fetch Registry:", err)
+        return
+    }
+    defer resp.Body.Close()
+
+    body, _ := io.ReadAll(resp.Body)
+    var pkgs []Package
+    if err := json.Unmarshal(body, &pkgs); err != nil {
+        fmt.Println("[KFPM] Invalid Registry Format:", err)
+        return
+    }
+
+    fmt.Println("Available Packages:")
+    for i, p := range pkgs {
+        fmt.Printf("%d. %s\n", i+1, p.Name)
+        fmt.Printf("    - Description: %s\n", p.Description)
+        fmt.Printf("    - Author: %s\n\n", p.Author)
+    }
 }
