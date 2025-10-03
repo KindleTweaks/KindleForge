@@ -1,8 +1,44 @@
 [
     {
+        "name": "KOReader",
+        "uri": "KOReader",
+        "description": "An E-Book Reader Application",
+        "author": "Hans-Werner"
+    },
+    {
+        "name": "kTerm",
+        "uri": "kTerm",
+        "description": "GTK+ Terminal Emulator for Kindle",
+        "author": "Bartek Fabiszewski"
+    },
+    {
+        "name": "KindleFetch",
+        "uri": "KindleFetch",
+        "description": "Download Books From Anna's Archive",
+        "author": "Justrals"
+    },
+    {
+        "name": "Gambatte-K2",
+        "uri": "GambatteK2",
+        "description": "Upgraded Gameboy Emulator For Kindle",
+        "author": "CrazyElectron"
+    },
+    {
         "name": "Gnome Games Suite",
         "uri": "GnomeGames",
         "description": "Gnome Games Suite For Kindle",
         "author": "CrazyElectron"
+    },
+    {
+        "name": "KWordle",
+        "uri": "KWordle",
+        "description": "Wordle Clone For Kindle",
+        "author": "Kurizu"
+    },
+    {
+        "name": "KAnki",
+        "uri": "KAnki",
+        "description": "Anki Flashcard App For Kindle",
+        "author": "Kurizu"
     }
 ]
