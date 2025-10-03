@@ -7,13 +7,10 @@ mkdir -p "$TMPDIR"
 
 OTA_SERVER="https://ota.koreader.rocks/"
 CHANNEL="nightly"
-OTA_ZSYNC="koreader-kindlehf-latest-$CHANNEL.zsync"
 
 if [ -f /lib/ld-linux-armhf.so.3 ]; then
-  # Hard Float
-  :
+  OTA_ZSYNC="koreader-kindlehf-latest-$CHANNEL.zsync"
 else
-  # Soft Float
   OTA_ZSYNC="koreader-kindlepw2-latest-$CHANNEL.zsync"
 fi
 
