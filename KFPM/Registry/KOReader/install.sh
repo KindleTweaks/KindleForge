@@ -11,6 +11,7 @@ OTA_ZSYNC="koreader-kindlehf-latest-$CHANNEL.zsync"
 
 if [ -f /lib/ld-linux-armhf.so.3 ]; then
   # Hard Float
+  :
 else
   # Soft Float
   OTA_ZSYNC="koreader-kindlepw2-latest-$CHANNEL.zsync"
