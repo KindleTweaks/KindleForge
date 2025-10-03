@@ -47,14 +47,15 @@ func main() {
             return
         }
         pkg := args[1]
+        verbose := len(args) > 2 && args[2] == "-v"
 
-        // validate package ID
+        //Validate Package ID
         if !validPackageID(pkg) {
             fmt.Println("[KFPM] Invalid Package ID!")
             return
         }
 
-        if runScript(pkg, "install") {
+        if runScript(pkg, "install", verbose) {
             fmt.Println("[KFPM] Install Success!")
             appendInstalled(pkg)
         } else {
@@ -67,13 +68,14 @@ func main() {
             return
         }
         pkg := args[1]
+        verbose := len(args) > 2 && args[2] == "-v"
 
         if !isInstalled(pkg) {
             fmt.Println("[KFPM] Package ID Not Installed.")
             return
         }
 
-        if runScript(pkg, "uninstall") {
+        if runScript(pkg, "uninstall", verbose) {
             fmt.Println("[KFPM] Removal Success!")
             removeInstalled(pkg)
         } else {
@@ -97,8 +99,8 @@ func help() {
 ====================
 v1.0, made by Penguins184
 
-kfpm -i <ID>         Installs Package
-kfpm -r/-u <ID>      Removes/Uninstalls Package
+kfpm -i <ID> [-v]    Installs Package
+kfpm -r/-u <ID> [-v] Removes/Uninstalls Package
 kfpm -l              Lists Installed Packages
 kfpm -a              Lists All Available Packages
 `)
@@ -110,9 +112,15 @@ func ensureInstalledDir() {
 }
 
 //Install/Uninstall Runners
-func runScript(pkg, action string) bool {
+func runScript(pkg, action string, verbose bool) bool {
     url := fmt.Sprintf("%s%s/%s.sh", registryBase, pkg, action)
     cmd := exec.Command("sh", "-c", "curl -sSL "+url+" | sh")
+
+    if verbose {
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
+    }
+
     err := cmd.Run()
     return err == nil
 }
