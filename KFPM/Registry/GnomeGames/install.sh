@@ -2,7 +2,7 @@
 
 set -e
 
-TMPDIR=/mnt/us/KFPM
+TMPDIR=/mnt/us/KFPM-Temporary
 mkdir -p "$TMPDIR"
 
 # Download + Extract

@@ -20,7 +20,7 @@ import (
 const (
     registryURL   = "https://raw.githubusercontent.com/polish-penguin-dev/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
     registryBase  = "https://raw.githubusercontent.com/polish-penguin-dev/KindleForge/refs/heads/master/KFPM/Registry/"
-    installedFile = "/usr/local/KFPM/installed.txt"
+    installedFile = "/mnt/us/.KFPM/installed.txt"
 )
 
 type Package struct {
@@ -47,6 +47,13 @@ func main() {
             return
         }
         pkg := args[1]
+
+        // validate package ID
+        if !validPackageID(pkg) {
+            fmt.Println("[KFPM] Invalid Package ID!")
+            return
+        }
+
         if runScript(pkg, "install") {
             fmt.Println("[KFPM] Install Success!")
             appendInstalled(pkg)
@@ -60,6 +67,12 @@ func main() {
             return
         }
         pkg := args[1]
+
+        if !isInstalled(pkg) {
+            fmt.Println("[KFPM] Package ID Not Installed.")
+            return
+        }
+
         if runScript(pkg, "uninstall") {
             fmt.Println("[KFPM] Removal Success!")
             removeInstalled(pkg)
@@ -84,8 +97,8 @@ func help() {
 ====================
 v1.0, made by Penguins184
 
-kfpm -i <package>    Installs Package
-kfpm -r/-u <package> Removes/Uninstalls Package
+kfpm -i <ID>         Installs Package
+kfpm -r/-u <ID>      Removes/Uninstalls Package
 kfpm -l              Lists Installed Packages
 kfpm -a              Lists All Available Packages
 `)
@@ -93,26 +106,29 @@ kfpm -a              Lists All Available Packages
 
 //Ensure Data Directory Exists
 func ensureInstalledDir() {
-    os.MkdirAll("/usr/local/KFPM", 0755)
+    os.MkdirAll("/mnt/us/.KFPM", 0755)
 }
 
 //Install/Uninstall Runners
 func runScript(pkg, action string) bool {
     url := fmt.Sprintf("%s%s/%s.sh", registryBase, pkg, action)
     cmd := exec.Command("sh", "-c", "curl -sSL "+url+" | sh")
-
     err := cmd.Run()
     return err == nil
 }
 
 //Append Package To List
 func appendInstalled(pkg string) {
+    //Duplicates
+    if isInstalled(pkg) {
+        return
+    }
     f, err := os.OpenFile(installedFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
     if err != nil {
         return
     }
     defer f.Close()
-    f.WriteString(pkg + "\n")
+    f.WriteString(strings.TrimSpace(pkg) + "\n")
 }
 
 //Remove Package From List
@@ -121,7 +137,7 @@ func removeInstalled(pkg string) {
     if err != nil {
         return
     }
-    lines := strings.Split(string(data), "\n")
+    lines := strings.Split(strings.TrimSpace(string(data)), "\n")
     out := []string{}
     for _, line := range lines {
         if line != pkg && line != "" {
@@ -134,43 +150,25 @@ func removeInstalled(pkg string) {
 //List Installed Packages
 func listInstalled() {
     data, err := os.ReadFile(installedFile)
-    if err != nil || len(data) == 0 {
+    if err != nil || len(strings.TrimSpace(string(data))) == 0 {
         fmt.Println("[KFPM] No Installed Packages Found!")
         return
     }
 
     lines := strings.Split(strings.TrimSpace(string(data)), "\n")
-    nonEmpty := []string{}
-    for _, line := range lines {
-        if line != "" {
-            nonEmpty = append(nonEmpty, line)
-        }
-    }
-
-    if len(nonEmpty) == 0 {
-        fmt.Println("[KFPM] No Installed Packages Found!")
-        return
-    }
 
     fmt.Println("Installed Packages:")
-    for i, line := range nonEmpty {
-        fmt.Printf("%d. %s\n", i+1, line)
+    for i, line := range lines {
+        if line != "" {
+            fmt.Printf("%d. %s\n", i+1, line)
+        }
     }
 }
 
-//List Availible Packages From Remote
+//List Available Packages From Remote
 func listAvailable() {
-    resp, err := http.Get(registryURL)
-    if err != nil {
-        fmt.Println("[KFPM] Failed To Fetch Registry:", err)
-        return
-    }
-    defer resp.Body.Close()
-
-    body, _ := io.ReadAll(resp.Body)
-    var pkgs []Package
-    if err := json.Unmarshal(body, &pkgs); err != nil {
-        fmt.Println("[KFPM] Invalid Registry Format:", err)
+    pkgs := fetchRegistry()
+    if pkgs == nil {
         return
     }
 
@@ -178,6 +176,52 @@ func listAvailable() {
     for i, p := range pkgs {
         fmt.Printf("%d. %s\n", i+1, p.Name)
         fmt.Printf("    - Description: %s\n", p.Description)
-        fmt.Printf("    - Author: %s\n\n", p.Author)
+        fmt.Printf("    - Author: %s\n", p.Author)
+        fmt.Printf("    - ID: %s\n\n", p.Uri)
     }
+}
+
+//Helpers
+func fetchRegistry() []Package {
+    resp, err := http.Get(registryURL)
+    if err != nil {
+        fmt.Println("[KFPM] Failed To Fetch Registry:", err)
+        return nil
+    }
+    defer resp.Body.Close()
+
+    body, _ := io.ReadAll(resp.Body)
+    var pkgs []Package
+    if err := json.Unmarshal(body, &pkgs); err != nil {
+        fmt.Println("[KFPM] Invalid Registry Format:", err)
+        return nil
+    }
+    return pkgs
+}
+
+func validPackageID(id string) bool {
+    pkgs := fetchRegistry()
+    if pkgs == nil {
+        return false
+    }
+    for _, p := range pkgs {
+        if p.Uri == id {
+            return true
+        }
+    }
+    return false
+}
+
+func isInstalled(id string) bool {
+    data, err := os.ReadFile(installedFile)
+    if err != nil {
+        return false
+    }
+    lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+    for _, line := range lines {
+        if line == id {
+            return true
+        }
+    }
+    return false
 }
