@@ -11,8 +11,8 @@ unzip -q "$TMPDIR/kanki.zip" -d "$TMPDIR"
 
 # Copy Contents
 mkdir -p /mnt/us/documents/kanki
-cp -r "$SUBDIR/kanki"/* /mnt/us/documents/kanki/
-cp "$SUBDIR/kanki.sh" /mnt/us/documents/
+cp -r "$TMPDIR/kanki"/* /mnt/us/documents/kanki/
+cp "$TMPDIR/kanki.sh" /mnt/us/documents/
 chmod +x /mnt/us/documents/kanki.sh
 
 # Cleanup

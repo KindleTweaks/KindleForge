@@ -11,8 +11,8 @@ unzip -q "$TMPDIR/kwordle.zip" -d "$TMPDIR"
 
 # Copy Contents
 mkdir -p /mnt/us/documents/kwordle
-cp -r "$SUBDIR/kwordle"/* /mnt/us/documents/kwordle/
-cp "$SUBDIR/kwordle.sh" /mnt/us/documents/
+cp -r "$TMPDIR/kwordle"/* /mnt/us/documents/kwordle/
+cp "$TMPDIR/kwordle.sh" /mnt/us/documents/
 chmod +x /mnt/us/documents/kwordle.sh
 
 # Cleanup
