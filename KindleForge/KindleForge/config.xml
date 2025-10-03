@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<widget id="xyz.penguins184.kindleforge" version="1.0" viewmodes="application" xmlns="http://www.w3.org/ns/widgets"
+    xmlns:kindle="http://kindle.amazon.com/ns/widget-extensions">
+    <name xml:lang="en">KindleForge</name>
+    <description xml:lang="en">Simple Illusion-Based Graphical Appstore</description>
+
+    <content src="index.html" />
+
+    <!-- Permissions & Settings Standard From Kindle Store. -->
+    <kindle:permissions>
+        <kindle:permission name="local-port-access" />
+    </kindle:permissions>
+    <kindle:network>
+        <kindle:asset key="user-agent" value="kindle://device-type" />
+        <kindle:asset key="user-agent" value="kindle://sw-version" />
+        <kindle:asset key="user-agent" value="kindle://pretty-sw-version" />
+        <kindle:asset key="http-header" value="kindle://transport-method" />
+        <kindle:asset key="http-header" value="kindle://country-code" />
+        <kindle:asset key="initialDNS" value="false" />
+        <kindle:asset key="maxConnections" value="6" />
+        <kindle:asset key="maxConnectionsPerHost" value="2" />
+        <kindle:asset key="maxConnectionsPerProxy" value="6" />
+        <kindle:asset key="overrideProxy" value="none" />
+        <kindle:asset key="enableCaching" value="false" />
+    </kindle:network>
+
+    <kindle:cookiejar>
+        <kindle:asset key="persistent" value="true" />
+        <kindle:asset key="usePrivateCookies" value="false" />
+        <kindle:asset key="useDeviceCookies" value="true" />
+        <kindle:asset key="useAccessToken" value="true" />
+    </kindle:cookiejar>
+
+    <kindle:chrome>
+        <kindle:asset key="configureSearchBar" value="system" />
+    </kindle:chrome>
+
+    <kindle:gestures>
+        <kindle:param name="tap" value="yes" properties="fire_on_tap:1 max_updown_delta:0" />
+        <kindle:param name="swipe" value="yes" />
+    </kindle:gestures>
+
+    <feature name="http://kindle.amazon.com/apis" required="true">
+        <param name="appmgr" value="yes" />
+        <param name="net" value="yes" />
+        <param name="todo" value="yes" />
+        <param name="gestures" value="yes" />
+        <param name="chrome" value="yes" />
+        <param name="dev" value="yes" />
+        <param name="dconfig" value="yes" />
+        <param name="download" value="yes" />
+        <param name="messaging" value="yes" />
+        <param name="uitest" value="yes" />
+        <param name="popup" value="yes" />
+        <param name="bkgrnd" value="yes" />
+        <param name="localprefs" value="yes" />
+        <param name="device" value="yes" />
+        <param name="winmgrUtils" value="yes" />
+        <param name="bluetooth" value="yes" />
+    </feature>
+
+    <kindle:messaging>
+        <kindle:app name="com.lab126.pillow" value="yes" />
+        <kindle:app name="com.lab126.chromebar" value="yes" />
+        <kindle:app name="com.lab126.readnow" value="yes" />
+        <kindle:app name="com.kindlemodding.utild" value="yes" /> <!-- Allow UTILD -->
+    </kindle:messaging>
+
+    <!-- Removed JQuery, Non-Used JS -->
+    <kindle:resources>
+        <kindle:asset key="AllowHTTPSApplicationManifestCrossDomain" value="true" />
+        <kindle:asset key="ApplicationCachePath" value="/var/local/mesquite/devkit/resource/appcache" />
+        <kindle:asset key="ApplicationCacheLoadDelay" value="6.0" />
+        <kindle:asset key="LocalStorageQuota" value="26214400" />
+    </kindle:resources>
+
+    <kindle:settings>
+        <kindle:setting name="internetRequired" value="yes" />
+        <kindle:setting name="saveContext" value="no" />
+        <kindle:setting name="disable-wua-features" value="yes" />
+    </kindle:settings>
+</widget>

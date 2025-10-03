@@ -1,0 +1,153 @@
+@font-face {
+    font-family: "Libre Baskerville";
+    src: url(assets/libre-baskerville.ttf) format("truetype");
+}
+
+@font-face {
+    font-family: "Inter";
+    src: url(assets/inter.ttf) format("truetype");
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: #111827;
+    background-color: white;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+header {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1.5rem 1rem 2rem 1rem;
+    text-align: center;
+    width: 100%;
+}
+
+h1 {
+    font-family: "Libre Baskerville", Georgia, serif;
+    font-size: 1.5rem;
+}
+
+main {
+    width: 100%;
+    padding-bottom: 2rem;
+    flex: 1;
+}
+
+.card {
+    border: 1px solid #9ca3af;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.title-box {
+    flex: 1;
+}
+
+.title {
+    font-family: "Libre Baskerville", Georgia, serif;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.author {
+    font-size: 0.75rem;
+    color: #4b5563;
+}
+
+.description {
+    color: #374151;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+    font-size: 0.875rem;
+}
+
+.install-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border: 2px solid #111827;
+    border-radius: 0.375rem;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 0.875rem;
+}
+
+.install-button:hover {
+    background-color: #111827;
+    color: white;
+}
+
+footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #4b5563;
+    width: 100%;
+}
+
+.icon {
+    width: 1em;
+    height: 1em;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+button {
+  margin: 5px 3px 5px;
+  padding: 14px 30px;
+  border-radius: 5px;
+  border: 1px solid #d3d6da;
+  background-color: #d3d6da;
+  font-size: 24px;
+  font-family: "Inter";
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+    main {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+}

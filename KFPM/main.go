@@ -58,8 +58,10 @@ func main() {
         if runScript(pkg, "install", verbose) {
             fmt.Println("[KFPM] Install Success!")
             appendInstalled(pkg)
+            exec.Command("sh", "-c", fmt.Sprintf(`lipc-send-event xyz.penguins184.kindleforge appInstallStatus -s "success"`)).Run()
         } else {
             fmt.Println("[KFPM] Install Failure!")
+            exec.Command("sh", "-c", fmt.Sprintf(`lipc-send-event xyz.penguins184.kindleforge appInstallStatus -s "failure"`)).Run()
         }
 
     case "-r", "-u":
@@ -78,8 +80,10 @@ func main() {
         if runScript(pkg, "uninstall", verbose) {
             fmt.Println("[KFPM] Removal Success!")
             removeInstalled(pkg)
+            exec.Command("sh", "-c", fmt.Sprintf(`lipc-send-event xyz.penguins184.kindleforge appUninstallStatus -s "success"`)).Run()
         } else {
             fmt.Println("[KFPM] Removal Failure!")
+            exec.Command("sh", "-c", fmt.Sprintf(`lipc-send-event xyz.penguins184.kindleforge appUninstallStatus -s "failure"`)).Run()
         }
 
     case "-l":
