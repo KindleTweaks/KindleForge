@@ -31,6 +31,8 @@ type Package struct {
 }
 
 func main() {
+    ensureInstalledDir()
+
     args := os.Args[1:]
 
     if len(args) == 0 {
@@ -89,15 +91,21 @@ kfpm -a              Lists All Available Packages
 `)
 }
 
+//Ensure Data Directory Exists
+func ensureInstalledDir() {
+    os.MkdirAll("/usr/local/KFPM", 0755)
+}
+
+//Install/Uninstall Runners
 func runScript(pkg, action string) bool {
     url := fmt.Sprintf("%s%s/%s.sh", registryBase, pkg, action)
-    cmd := exec.Command("sh", "-c", "curl -sL "+url+" | sh")
-    cmd.Stdout = os.Stdout
-    cmd.Stderr = os.Stderr
+    cmd := exec.Command("sh", "-c", "curl -sSL "+url+" | sh")
+
     err := cmd.Run()
     return err == nil
 }
 
+//Append Package To List
 func appendInstalled(pkg string) {
     f, err := os.OpenFile(installedFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
     if err != nil {
@@ -107,6 +115,7 @@ func appendInstalled(pkg string) {
     f.WriteString(pkg + "\n")
 }
 
+//Remove Package From List
 func removeInstalled(pkg string) {
     data, err := os.ReadFile(installedFile)
     if err != nil {
@@ -122,25 +131,34 @@ func removeInstalled(pkg string) {
     os.WriteFile(installedFile, []byte(strings.Join(out, "\n")), 0644)
 }
 
+//List Installed Packages
 func listInstalled() {
     data, err := os.ReadFile(installedFile)
-    if err != nil {
+    if err != nil || len(data) == 0 {
         fmt.Println("[KFPM] No Installed Packages Found!")
         return
     }
+
     lines := strings.Split(strings.TrimSpace(string(data)), "\n")
-    if len(lines) == 0 || (len(lines) == 1 && lines[0] == "") {
-        fmt.Println("[KFPM] No Installed Packages Found!")
-        return
-    }
-    fmt.Println("Installed Packages:")
+    nonEmpty := []string{}
     for _, line := range lines {
         if line != "" {
-            fmt.Println(" -", line)
+            nonEmpty = append(nonEmpty, line)
         }
+    }
+
+    if len(nonEmpty) == 0 {
+        fmt.Println("[KFPM] No Installed Packages Found!")
+        return
+    }
+
+    fmt.Println("Installed Packages:")
+    for i, line := range nonEmpty {
+        fmt.Printf("%d. %s\n", i+1, line)
     }
 }
 
+//List Availible Packages From Remote
 func listAvailable() {
     resp, err := http.Get(registryURL)
     if err != nil {
