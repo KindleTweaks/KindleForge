@@ -58,10 +58,10 @@ func main() {
         if runScript(pkg, "install", verbose) {
             fmt.Println("[KFPM] Install Success!")
             appendInstalled(pkg)
-            exec.Command("sh", "-c", `lipc-set-prop xyz.penguins184.kfevent appInstallStatus -s "success"`).Run()
+            exec.Command("/bin/sh", "-c", `lipc-set-prop xyz.penguins184.kindleforge appInstallStatus -s "success"`).Run()
         } else {
             fmt.Println("[KFPM] Install Failure!")
-            exec.Command("sh", "-c", `lipc-set-prop xyz.penguins184.kfevent appInstallStatus -s "failure"`).Run()
+            exec.Command("/bin/sh", "-c", `lipc-set-prop xyz.penguins184.kindleforge appInstallStatus -s "failure"`).Run()
         }
 
     case "-r", "-u":
@@ -80,10 +80,10 @@ func main() {
         if runScript(pkg, "uninstall", verbose) {
             fmt.Println("[KFPM] Removal Success!")
             removeInstalled(pkg)
-            exec.Command("sh", "-c", `lipc-set-prop xyz.penguins184.kfevent appUninstallStatus -s "success"`).Run()
+            exec.Command("/bin/sh", "-c", `lipc-set-prop xyz.penguins184.kindleforge appUninstallStatus -s "success"`).Run()
         } else {
             fmt.Println("[KFPM] Removal Failure!")
-            exec.Command("sh", "-c", `lipc-set-prop xyz.penguins184.kfevent appUninstallStatus -s "failure"`).Run()
+            exec.Command("/bin/sh", "-c", `lipc-set-prop xyz.penguins184.kindleforge appUninstallStatus -s "failure"`).Run()
         }
 
     case "-l":
@@ -118,7 +118,7 @@ func ensureInstalledDir() {
 //Install/Uninstall Runners
 func runScript(pkg, action string, verbose bool) bool {
     url := fmt.Sprintf("%s%s/%s.sh", registryBase, pkg, action)
-    cmd := exec.Command("sh", "-c", "curl -sSL "+url+" | sh")
+    cmd := exec.Command("/bin/sh", "-c", "curl -sSL "+url+" | sh")
 
     if verbose {
         cmd.Stdout = os.Stdout

@@ -2,7 +2,7 @@
   KindleForge
   "Do not ask me what is here, for I have no idea" - penguins184
 
-  Last Updated 10/25 — fixed installed list parsing, event handling, and undefined installs.
+  Last Updated 10/25
 */
 
 function update() {
@@ -74,7 +74,7 @@ function _file(url) {
       var src = e.target.contentDocument.documentElement.innerHTML;
       e.target.remove();
       var clean = src
-        .replace(/<[^>]+>/g, "")   // strip HTML tags
+        .replace(/<[^>]+>/g, "")   
         .replace(/\r/g, "\n")
         .replace(/\n+/g, "\n")
         .trim();
@@ -86,7 +86,6 @@ function _file(url) {
 
 function init() {
   _file("file:///mnt/us/.KFPM/installed.txt").then(function(data) {
-    // Normalize weird formatting and join wrapped lines
     var joined = data.replace(/\d+\.\s*/g, "\n").trim();
     var installed = joined.split(/\n+/).map(function(line) {
       return line.replace(/^\d+\.\s*/, "").trim();
@@ -105,7 +104,7 @@ function render(installed) {
   var container = document.getElementById("apps");
   while (container.firstChild) container.removeChild(container.firstChild);
 
-  function makeButton(name, isInstalled) {
+  function button(name, isInstalled) {
     var btn = document.createElement("button");
     btn.className = "install-button";
     btn.setAttribute("data-name", name);
@@ -126,8 +125,8 @@ function render(installed) {
     var header = document.createElement("div");
     header.className = "header";
 
-    var titleBox = document.createElement("div");
-    titleBox.className = "title-box";
+    var tBox = document.createElement("div");
+    tBox.className = "title-box";
 
     var h2 = document.createElement("h2");
     h2.className = "title";
@@ -137,15 +136,15 @@ function render(installed) {
     pAuth.className = "author";
     pAuth.textContent = "by " + app.author;
 
-    titleBox.appendChild(h2);
-    titleBox.appendChild(pAuth);
-    header.appendChild(titleBox);
+    tBox.appendChild(h2);
+    tBox.appendChild(pAuth);
+    header.appendChild(tBox);
 
     var pDesc = document.createElement("p");
     pDesc.className = "description";
     pDesc.textContent = app.description;
 
-    var btn = makeButton(name, isInstalled);
+    var btn = button(name, isInstalled);
 
     card.appendChild(header);
     card.appendChild(pDesc);
