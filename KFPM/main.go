@@ -58,10 +58,10 @@ func main() {
         if runScript(pkg, "install", verbose) {
             fmt.Println("[KFPM] Install Success!")
             appendInstalled(pkg)
-            exec.Command("sh", "-c", fmt.Sprintf(`lipc-send-event xyz.penguins184.kindleforge appInstallStatus -s "success"`)).Run()
+            exec.Command("sh", "-c", `lipc-set-prop xyz.penguins184.kfevent appInstallStatus -s "success"`).Run()
         } else {
             fmt.Println("[KFPM] Install Failure!")
-            exec.Command("sh", "-c", fmt.Sprintf(`lipc-send-event xyz.penguins184.kindleforge appInstallStatus -s "failure"`)).Run()
+            exec.Command("sh", "-c", `lipc-set-prop xyz.penguins184.kfevent appInstallStatus -s "failure"`).Run()
         }
 
     case "-r", "-u":
@@ -80,10 +80,10 @@ func main() {
         if runScript(pkg, "uninstall", verbose) {
             fmt.Println("[KFPM] Removal Success!")
             removeInstalled(pkg)
-            exec.Command("sh", "-c", fmt.Sprintf(`lipc-send-event xyz.penguins184.kindleforge appUninstallStatus -s "success"`)).Run()
+            exec.Command("sh", "-c", `lipc-set-prop xyz.penguins184.kfevent appUninstallStatus -s "success"`).Run()
         } else {
             fmt.Println("[KFPM] Removal Failure!")
-            exec.Command("sh", "-c", fmt.Sprintf(`lipc-send-event xyz.penguins184.kindleforge appUninstallStatus -s "failure"`)).Run()
+            exec.Command("sh", "-c", `lipc-set-prop xyz.penguins184.kfevent appUninstallStatus -s "failure"`).Run()
         }
 
     case "-l":
@@ -131,15 +131,27 @@ func runScript(pkg, action string, verbose bool) bool {
 
 //Append Package To List
 func appendInstalled(pkg string) {
-    //Duplicates
-    if isInstalled(pkg) {
-        return
+    data, _ := os.ReadFile(installedFile)
+    text := strings.TrimSpace(string(data))
+
+    lines := strings.Split(text, "\n")
+    for _, line := range lines {
+        if strings.TrimSpace(line) == pkg {
+            return
+        }
     }
+
     f, err := os.OpenFile(installedFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
     if err != nil {
         return
     }
     defer f.Close()
+
+    //Ensure Newline
+    if len(text) > 0 && !strings.HasSuffix(text, "\n") {
+        f.WriteString("\n")
+    }
+
     f.WriteString(strings.TrimSpace(pkg) + "\n")
 }
 
@@ -149,14 +161,17 @@ func removeInstalled(pkg string) {
     if err != nil {
         return
     }
+
     lines := strings.Split(strings.TrimSpace(string(data)), "\n")
-    out := []string{}
+    var out []string
     for _, line := range lines {
-        if line != pkg && line != "" {
-            out = append(out, line)
+        trimmed := strings.TrimSpace(line)
+        if trimmed != "" && trimmed != pkg {
+            out = append(out, trimmed)
         }
     }
-    os.WriteFile(installedFile, []byte(strings.Join(out, "\n")), 0644)
+
+    os.WriteFile(installedFile, []byte(strings.Join(out, "\n")+"\n"), 0644)
 }
 
 //List Installed Packages
@@ -168,11 +183,11 @@ func listInstalled() {
     }
 
     lines := strings.Split(strings.TrimSpace(string(data)), "\n")
-
     fmt.Println("Installed Packages:")
     for i, line := range lines {
-        if line != "" {
-            fmt.Printf("%d. %s\n", i+1, line)
+        trimmed := strings.TrimSpace(line)
+        if trimmed != "" {
+            fmt.Printf("%d. %s\n", i+1, trimmed)
         }
     }
 }
@@ -231,7 +246,7 @@ func isInstalled(id string) bool {
     }
     lines := strings.Split(strings.TrimSpace(string(data)), "\n")
     for _, line := range lines {
-        if line == id {
+        if strings.TrimSpace(line) == id {
             return true
         }
     }
