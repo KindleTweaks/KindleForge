@@ -25,8 +25,14 @@ fi
 
 [ -e "$OTHER" ] && rm -f "$OTHER"
 
+if [ ! -d "$SOURCE_DIR/binaries" ] && [ -d "$TARGET_DIR/binaries" ]; then
+    mv "$TARGET_DIR/binaries" /tmp/binaries_backup
+fi
+
 [ -d "$TARGET_DIR" ] && rm -rf "$TARGET_DIR"
 [ -d "$SOURCE_DIR" ] && cp -r "$SOURCE_DIR" "$TARGET_DIR" || exit 1
+
+[ -d /tmp/binaries_backup ] && mv /tmp/binaries_backup "$TARGET_DIR/binaries"
 
 [ -d "$SOURCE_DIR/binaries" ] && rm -rf "$SOURCE_DIR/binaries"
 
