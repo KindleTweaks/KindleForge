@@ -10,7 +10,7 @@ function update() {
     "appId": "xyz.penguins184.kindleforge",
     "topNavBar": {
       "template": "title",
-      "title": "App Store",
+      "title": "KindleForge",
       "buttons": [
         { "id": "KPP_MORE", "state": "enabled", "handling": "system" },
         { "id": "KPP_CLOSE", "state": "enabled", "handling": "system" }
@@ -64,7 +64,7 @@ if (cards.length > 0) window.scrollTo(0, cards[cIndex].offsetTop);
 function gCard(index) {
   if (cards.length === 0) return;
   cIndex = Math.max(0, Math.min(cards.length - 1, index));
-  window.scrollTo(0, cards[cIndex].offsetTop);
+  window.scrollTo(0, cards[cIndex].offsetTop - 10);
   document.location.hash = cards[cIndex].id;
 }
 
@@ -227,6 +227,8 @@ function render(installed) {
           name +
           "...";
 
+        btn.offsetHeight; //Reflow
+
         var eventName = wasInstalled ? "appUninstallStatus" : "appInstallStatus";
         (window.kindle || top.kindle).messaging.receiveMessage(
           eventName,
@@ -255,15 +257,22 @@ function render(installed) {
 
             setTimeout(function() {
               btn.blur();
+              btn.style.pointerEvents = "none";
+
+              void btn.offsetHeight;
+  
+              btn.style.pointerEvents = "";
             }, 50); 
           }
         );
 
-        (window.kindle || top.kindle).messaging.sendStringMessage(
-          "com.kindlemodding.utild",
-          "runCMD",
-          "/var/local/mesquite/KindleForge/binaries/KFPM " + action + " " + pkgId
-        );
+        setTimeout(function() {
+          (window.kindle || top.kindle).messaging.sendStringMessage(
+            "com.kindlemodding.utild",
+            "runCMD",
+            "/var/local/mesquite/KindleForge/binaries/KFPM " + action + " " + pkgId
+          );
+        }, 10); //Give Time For UI Update
       });
     })(j);
   }
