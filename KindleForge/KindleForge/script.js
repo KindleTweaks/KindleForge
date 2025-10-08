@@ -45,6 +45,43 @@ window.kindle.appmgr.ongo = function() {
   });
 };
 
+var cards = [];
+var elems = document.getElementsByClassName("card");
+for (var i = 0; i < elems.length; i++) {
+  cards.push(elems[i]);
+}
+
+var cIndex = 0;
+var hash = document.location.hash.replace("#", "");
+for (var j = 0; j < cards.length; j++) {
+  if (cards[j].id === hash) {
+    cIndex = j;
+    break;
+  }
+}
+if (cards.length > 0) window.scrollTo(0, cards[cIndex].offsetTop);
+
+function gCard(index) {
+  if (cards.length === 0) return;
+  cIndex = Math.max(0, Math.min(cards.length - 1, index));
+  window.scrollTo(0, cards[cIndex].offsetTop);
+  document.location.hash = cards[cIndex].id;
+}
+
+function next() {
+  gCard(cIndex + 1);
+}
+
+function prev() {
+  gCard(cIndex - 1);
+}
+
+window.kindle.gestures.onswipe = function(direction) {
+  direction = direction.toLowerCase();
+  if (direction === "up") next();
+  else if (direction === "down") prev();
+};
+
 var apps = [];
 var lock = false;
 
@@ -215,6 +252,10 @@ function render(installed) {
                 name +
                 "!";
             }
+
+            setTimeout(function() {
+              btn.blur();
+            }, 50); 
           }
         );
 
@@ -226,6 +267,11 @@ function render(installed) {
       });
     })(j);
   }
+
+  cards = [];
+  var elems2 = document.getElementsByClassName("card");
+  for (var k = 0; k < elems2.length; k++) cards.push(elems2[k]);
+  gCard(cIndex);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
