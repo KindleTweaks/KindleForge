@@ -221,7 +221,7 @@ function render(installed) {
         (window.kindle || top.kindle).messaging.sendStringMessage(
           "com.kindlemodding.utild",
           "runCMD",
-          "/var/local/mesquite/KindleForge/assets/KFPM " + action + " " + pkgId
+          "/var/local/mesquite/KindleForge/binaries/KFPM " + action + " " + pkgId
         );
       });
     })(j);
