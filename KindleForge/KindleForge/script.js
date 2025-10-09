@@ -95,7 +95,7 @@ function _fetch(url, cb) {
         if (cb) cb();
         else init();
       } catch (e) {
-        console.log("JSON parse failed", e);
+        console.log("JSON Parse Failed", e);
       }
     }
   };
@@ -281,6 +281,7 @@ function render(installed) {
   var elems2 = document.getElementsByClassName("card");
   for (var k = 0; k < elems2.length; k++) cards.push(elems2[k]);
   gCard(cIndex);
+  document.body.offsetHeight; //Reflow
 }
 
 document.addEventListener("DOMContentLoaded", function() {
