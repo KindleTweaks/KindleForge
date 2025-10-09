@@ -286,7 +286,7 @@ function render(installed) {
 
 document.addEventListener("DOMContentLoaded", function() {
   _fetch(
-    "https://raw.githubusercontent.com/polish-penguin-dev/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
+    "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
   );
   document.getElementById("status").innerText = "JS Working!";
 });
