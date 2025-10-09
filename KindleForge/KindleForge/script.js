@@ -76,11 +76,11 @@ function prev() {
   gCard(cIndex - 1);
 }
 
-window.kindle.gestures.onswipe = function(direction) {
-  direction = direction.toLowerCase();
-  if (direction === "up") next();
-  else if (direction === "down") prev();
-};
+window.addEventListener("mousewheel", function(e) {
+  e.preventDefault();
+  if (e.wheelDeltaY > 0) prev();
+  else if (e.wheelDeltaY < 0) next();
+});
 
 var apps = [];
 var lock = false;

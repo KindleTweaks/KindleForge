@@ -3,6 +3,8 @@
 > [!NOTE]
 > Welcome To KindleForge 4!
 
+<a href='https://ko-fi.com/W7W31J9IS0' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 ## Installation
 
 1. Grab the lastest file from releases
@@ -25,4 +27,4 @@ TODO
 - Penguins184, author
 - Kurizu, Illusion help & app image
 - Gingrspacecadet, inspiration & repository help
-- Clint, event & KFPM troubleshooting
+- Clint, event & KFPM troubleshooting, scroll help
