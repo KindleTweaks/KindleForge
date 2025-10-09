@@ -11,6 +11,13 @@
 2. Unzip it, paste both `KindleForge/` and `KindleForge.sh` into the `documents/` folder on your Kindle.
 3. Run the scriptlet, and have fun!
 
+## Features
+
+- Reliable installation flow
+- Smooth scroll, pretty frontend & UI
+- Multiple package support
+- Hard-float and soft-float support
+
 ## Minimum Requirements
 
 - AdBreak, WinterBreak, or LanguageBreak
