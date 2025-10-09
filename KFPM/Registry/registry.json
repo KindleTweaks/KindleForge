@@ -1,5 +1,11 @@
 [
     {
+        "name": "Toggle ADs",
+        "uri": "ToggleAds",
+        "description": "Toggle Ads On/Off Scriptlet",
+        "author": "Marek & Penguins"
+    },
+    {
         "name": "KOReader",
         "uri": "KOReader",
         "description": "An E-Book Reader Application",
