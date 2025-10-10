@@ -80,8 +80,6 @@ window.addEventListener("mousewheel", function(e) {
   e.preventDefault();
   if (e.wheelDeltaY > 0) prev();
   else if (e.wheelDeltaY < 0) next();
-
-  document.body.offsetHeight; //Reflow (On Scroll)
 });
 
 var apps = [];
@@ -211,12 +209,21 @@ function render(installed) {
 
         if (lock) {
           btn.innerHTML = icons.progress + " Another Operation In Progress...";
-          btn.offsetHeight; //Reflow
+          btn.blur(); btn.offsetHeight; //Blur & Reflow
+
+          requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+              btn.offsetHeight; //Ensure Reflow
+            });
+          });
+
           setTimeout(function() {
             btn.innerHTML =
               (wasInstalled ? icons.x : icons.download) +
               (wasInstalled ? " Uninstall Application" : " Install Application");
           }, 2000);
+
+          setTimeout(function() {}, 50); //UI Update Time
           return;
         }
 
@@ -275,7 +282,6 @@ function render(installed) {
   var elems2 = document.getElementsByClassName("card");
   for (var k = 0; k < elems2.length; k++) cards.push(elems2[k]);
   gCard(cIndex);
-  document.body.offsetHeight; //Reflow (On Load)
 }
 
 document.addEventListener("DOMContentLoaded", function() {
