@@ -106,17 +106,6 @@ main {
     font-size: 0.875rem;
 }
 
-.install-button:hover {
-    background-color: #111827;
-    color: white;
-}
-
-.install-button:focus {
-    outline: none;
-    background-color: transparent;
-    color: inherit;
-}
-
 footer {
     border-top: 1px solid #e5e7eb;
     padding: 1rem;

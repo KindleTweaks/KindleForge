@@ -1,6 +1,6 @@
 /*
   KindleForge
-  "Do not ask me what is here, for I have no idea" - penguins184
+  Kindle GUI Appstore
 
   Last Updated 10/25
 */
@@ -80,6 +80,8 @@ window.addEventListener("mousewheel", function(e) {
   e.preventDefault();
   if (e.wheelDeltaY > 0) prev();
   else if (e.wheelDeltaY < 0) next();
+
+  document.body.offsetHeight; //Reflow (On Scroll)
 });
 
 var apps = [];
@@ -209,6 +211,7 @@ function render(installed) {
 
         if (lock) {
           btn.innerHTML = icons.progress + " Another Operation In Progress...";
+          btn.offsetHeight; //Reflow
           setTimeout(function() {
             btn.innerHTML =
               (wasInstalled ? icons.x : icons.download) +
@@ -254,15 +257,6 @@ function render(installed) {
                 name +
                 "!";
             }
-
-            setTimeout(function() {
-              btn.blur();
-              btn.style.pointerEvents = "none";
-
-              void btn.offsetHeight;
-  
-              btn.style.pointerEvents = "";
-            }, 50); 
           }
         );
 
@@ -281,7 +275,7 @@ function render(installed) {
   var elems2 = document.getElementsByClassName("card");
   for (var k = 0; k < elems2.length; k++) cards.push(elems2[k]);
   gCard(cIndex);
-  document.body.offsetHeight; //Reflow
+  document.body.offsetHeight; //Reflow (On Load)
 }
 
 document.addEventListener("DOMContentLoaded", function() {
