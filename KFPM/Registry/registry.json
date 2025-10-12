@@ -1,5 +1,11 @@
 [
     {
+        "name": "JarLauncher",
+        "uri": "JarLauncher",
+        "description": "Launches jars #TODO: better description",
+        "author": "ThatPotatoDev"
+    },
+    {
         "name": "Toggle ADs",
         "uri": "ToggleAds",
         "description": "Toggle Ads On/Off Scriptlet",
