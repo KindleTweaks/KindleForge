@@ -2,7 +2,7 @@
     {
         "name": "JarLauncher",
         "uri": "JarLauncher",
-        "description": "Launches jars #TODO: better description",
+        "description": "Java Installer and Jar Launcher",
         "author": "ThatPotatoDev"
     },
     {
