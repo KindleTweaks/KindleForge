@@ -7,6 +7,8 @@
 
 *Like my work? Consider donating or just starring my repo! :)*
 
+KindleForge is a GUI Appstore for Kindles, allowing you to download & install tweaks & applications such as KOReader directly on-device, without having to keep copying files locally.
+
 ## Installation
 
 1. Grab the lastest file from releases
