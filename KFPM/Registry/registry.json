@@ -1,11 +1,5 @@
 [
     {
-        "name": "JarLauncher",
-        "uri": "JarLauncher",
-        "description": "Java Installer and Jar Launcher",
-        "author": "ThatPotatoDev"
-    },
-    {
         "name": "Toggle ADs",
         "uri": "ToggleAds",
         "description": "Toggle Ads On/Off Scriptlet",
@@ -52,5 +46,11 @@
         "uri": "KAnki",
         "description": "Anki Flashcard App For Kindle",
         "author": "Kurizu"
+    },
+    {
+        "name": "JarLauncher",
+        "uri": "JarLauncher",
+        "description": "Java Installer and Jar Launcher",
+        "author": "ThatPotatoDev"
     }
 ]
