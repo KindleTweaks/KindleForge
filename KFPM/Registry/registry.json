@@ -46,5 +46,11 @@
         "uri": "KAnki",
         "description": "Anki Flashcard App For Kindle",
         "author": "Kurizu"
+    },
+    {
+        "name": "KPM",
+        "uri": "KPM",
+        "description": "A Kindle Package Manager",
+        "author": "Gingrspacecadet"
     }
 ]

@@ -38,3 +38,4 @@ KindleForge is a GUI Appstore for Kindles, allowing you to download & install tw
 - Kurizu, Illusion help & app image
 - Gingrspacecadet, inspiration & repository help
 - Clint, event & KFPM troubleshooting, scroll help
+- Dammit Jeff, Gambatte-K2 & KOReader icons
