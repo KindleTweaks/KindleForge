@@ -16,6 +16,9 @@ SUBDIR=$(find "$TMPDIR" -mindepth 1 -maxdepth 1 -type d | head -n 1)
 mkdir -p /mnt/us/extensions/gambatte-k2
 cp -r "$SUBDIR"/* /mnt/us/extensions/gambatte-k2
 
+# Download Scriptlet
+curl -L -o /mnt/us/documents/gambatte-k2.sh https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/GambatteK2/assets/gambatte-k2.sh
+
 # Cleanup
 rm -rf "$TMPDIR"
 

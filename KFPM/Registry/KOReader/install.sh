@@ -25,6 +25,9 @@ curl $OTA_SERVER$OTA_FILENAME -s --output $TMPDIR/KoreaderInstall.tar.gz
 
 tar -xf $TMPDIR/KoreaderInstall.tar.gz -C /mnt/us/
 
+# Download Scriptlet
+curl -L -o /mnt/us/documents/koreader.sh https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/KOReader/assets/koreader.sh
+
 # Cleanup
 rm -rf $TMPDIR
 
