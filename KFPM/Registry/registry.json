@@ -52,5 +52,11 @@
         "uri": "KPM",
         "description": "A Kindle Package Manager",
         "author": "Gingrspacecadet"
+    },
+    {
+        "name": "Kreate",
+        "uri": "Kreate",
+        "description": "A Simple Drawing Application For Kindle",
+        "author": "Foskya"
     }
 ]
