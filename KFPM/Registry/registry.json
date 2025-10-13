@@ -48,6 +48,12 @@
         "author": "Kurizu"
     },
     {
+        "name": "JarLauncher",
+        "uri": "JarLauncher",
+        "description": "Java Installer and Jar Launcher",
+        "author": "ThatPotatoDev"
+    },
+    {
         "name": "KPM",
         "uri": "KPM",
         "description": "A Kindle Package Manager",
