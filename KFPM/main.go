@@ -58,10 +58,10 @@ func main() {
         if runScript(pkg, "install", verbose) {
             fmt.Println("[KFPM] Install Success!")
             appendInstalled(pkg)
-            exec.Command("/bin/sh", "-c", `lipc-set-prop xyz.penguins184.kindleforge appInstallStatus -s "success"`).Run()
+            setStatus("appInstallStatus", "success")
         } else {
             fmt.Println("[KFPM] Install Failure!")
-            exec.Command("/bin/sh", "-c", `lipc-set-prop xyz.penguins184.kindleforge appInstallStatus -s "failure"`).Run()
+            setStatus("appInstallStatus", "failure")
         }
 
     case "-r", "-u":
@@ -80,10 +80,10 @@ func main() {
         if runScript(pkg, "uninstall", verbose) {
             fmt.Println("[KFPM] Removal Success!")
             removeInstalled(pkg)
-            exec.Command("/bin/sh", "-c", `lipc-set-prop xyz.penguins184.kindleforge appUninstallStatus -s "success"`).Run()
+            setStatus("appUninstallStatus", "success")
         } else {
             fmt.Println("[KFPM] Removal Failure!")
-            exec.Command("/bin/sh", "-c", `lipc-set-prop xyz.penguins184.kindleforge appUninstallStatus -s "failure"`).Run()
+            setStatus("appUninstallStatus", "failure")
         }
 
     case "-l":
@@ -251,4 +251,9 @@ func isInstalled(id string) bool {
         }
     }
     return false
+}
+
+func setStatus(prop, status string) {
+    cmd := exec.Command(fmt.Sprintf(`lipc-set-prop xyz.penguins184.kindleforge %s -s "%s"`, prop, status))
+    cmd.Run()
 }
