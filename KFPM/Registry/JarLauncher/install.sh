@@ -6,7 +6,7 @@ TMPDIR=/mnt/us/KFPM-Temporary
 mkdir -p "$TMPDIR"
 
 # Download + Extract
-curl -L -o "$TMPDIR/JarLauncher.zip" https://github.com/ThatPotatoDev/JarLauncher/releases/latest/download/JarLauncher.zip
+curl -fSL --progress-bar -o "$TMPDIR/JarLauncher.zip" https://github.com/ThatPotatoDev/JarLauncher/releases/latest/download/JarLauncher.zip
 unzip -q "$TMPDIR/JarLauncher.zip" -d "$TMPDIR"
 
 # Copy Contents

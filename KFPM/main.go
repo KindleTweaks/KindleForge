@@ -118,7 +118,7 @@ func ensureInstalledDir() {
 //Install/Uninstall Runners
 func runScript(pkg, action string, verbose bool) bool {
     url := fmt.Sprintf("%s%s/%s.sh", registryBase, pkg, action)
-    cmd := exec.Command("/bin/sh", "-c", "curl -sSL "+url+" | sh")
+    cmd := exec.Command("/bin/sh", "-c", "curl -fSL --progress-bar "+url+" | sh")
 
     if verbose {
         cmd.Stdout = os.Stdout

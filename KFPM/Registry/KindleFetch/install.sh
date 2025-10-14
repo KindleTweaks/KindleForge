@@ -2,7 +2,7 @@
 
 set -e
 
-curl https://justrals.github.io/KindleFetch/install.sh | sh 
+curl -fSL --progress-bar https://justrals.github.io/KindleFetch/install.sh | sh 
 
 # Finish
 exit 0
