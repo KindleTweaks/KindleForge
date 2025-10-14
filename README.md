@@ -32,6 +32,12 @@ KindleForge is a GUI Appstore for Kindles, allowing you to download & install tw
 - Above the 5.6.1.1 firmware in the least
 - Both **hard-float and soft-float** kindles should work, but not all packages may support both architectures.
 
+## Troubleshooting
+
+Try reloading multiple times, rebooting, or re-copying assets from the latest release and trying again.
+
+KindleTweaks project suggestions? Tweak suggestions? Feature requests? Check out our [discord](https://discord.gg/aSG3eMsAsW)!
+
 ## Special Thanks
 
 - Penguins184, author
