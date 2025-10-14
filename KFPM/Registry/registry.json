@@ -64,5 +64,11 @@
         "uri": "Kreate",
         "description": "A Simple Drawing Application For Kindle",
         "author": "Foskya"
+    },
+    {
+        "name": "SOX Media Player",
+        "uri": "SOX",
+        "description": "A Simple Bluetooth Audio Player For Kindle",
+        "author": "Dhdurgee"
     }
 ]
