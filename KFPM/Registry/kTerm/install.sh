@@ -11,7 +11,7 @@ else
 fi
 
 # Download + Extract
-curl -L -o "$TMPDIR/kterm.zip" "$PACKAGE"
+curl -fSL --progress-bar -o "$TMPDIR/kterm.zip" "$PACKAGE"
 unzip -q "$TMPDIR/kterm.zip" -d "$TMPDIR"
 
 # Subdir Or TMPDIR

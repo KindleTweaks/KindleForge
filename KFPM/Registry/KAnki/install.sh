@@ -6,7 +6,7 @@ TMPDIR=/mnt/us/KFPM-Temporary
 mkdir -p "$TMPDIR"
 
 # Download + Extract
-curl -L -o "$TMPDIR/kanki.zip" https://github.com/crizmo/kanki/releases/latest/download/kanki.zip
+curl -fSL --progress-bar -o "$TMPDIR/kanki.zip" https://github.com/crizmo/kanki/releases/latest/download/kanki.zip
 unzip -q "$TMPDIR/kanki.zip" -d "$TMPDIR"
 
 # Copy Contents

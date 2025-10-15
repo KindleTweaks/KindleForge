@@ -12,7 +12,7 @@ else
 fi
 
 # Download
-curl -L -o $TMPDIR/sox.zip $LINK
+curl -fSL --progress-bar -o $TMPDIR/sox.zip $LINK
 unzip -q "$TMPDIR/sox.zip" -d /mnt/us
 
 # Cleanup

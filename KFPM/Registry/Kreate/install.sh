@@ -6,7 +6,7 @@ TMPDIR=/mnt/us/KFPM-Temporary
 mkdir -p "$TMPDIR"
 
 # Download + Extract
-curl -L -o "$TMPDIR/kreate.zip" https://github.com/KindleTweaks/KindleForge/raw/refs/heads/master/KFPM/Registry/Kreate/assets/kreate.zip
+curl -fSL --progress-bar -o "$TMPDIR/kreate.zip" https://github.com/KindleTweaks/KindleForge/raw/refs/heads/master/KFPM/Registry/Kreate/assets/kreate.zip
 unzip -q "$TMPDIR/kreate.zip" -d "$TMPDIR"
 
 # First Subfolder

@@ -6,7 +6,7 @@ TMPDIR=/mnt/us/KFPM-Temporary
 mkdir -p "$TMPDIR"
 
 # Download + Extract
-curl -L -o "$TMPDIR/kwordle.zip" https://github.com/crizmo/kwordle/releases/latest/download/kwordle.zip
+curl -fSL --progress-bar -o "$TMPDIR/kwordle.zip" https://github.com/crizmo/kwordle/releases/latest/download/kwordle.zip
 unzip -q "$TMPDIR/kwordle.zip" -d "$TMPDIR"
 
 # Copy Contents

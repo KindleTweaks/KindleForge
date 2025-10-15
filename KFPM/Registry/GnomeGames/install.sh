@@ -6,7 +6,7 @@ TMPDIR=/mnt/us/KFPM-Temporary
 mkdir -p "$TMPDIR"
 
 # Download + Extract
-curl -L -o "$TMPDIR/gnomegames.zip" https://github.com/crazy-electron/GnomeGames4Kindle/releases/latest/download/gnomegames.zip
+curl -fSL --progress-bar -o "$TMPDIR/gnomegames.zip" https://github.com/crazy-electron/GnomeGames4Kindle/releases/latest/download/gnomegames.zip
 unzip -q "$TMPDIR/gnomegames.zip" -d "$TMPDIR"
 
 # First Subfolder
