@@ -70,5 +70,11 @@
         "uri": "SOX",
         "description": "A Simple Bluetooth Audio Player For Kindle",
         "author": "Dhdurgee"
+    },
+    {
+        "name": "KindleCraft",
+        "uri": "KindleCraft",
+        "description": "A basic minecraft server (1.21.8)",
+        "author": "p2r3 & gingrspacecadet"
     }
 ]
