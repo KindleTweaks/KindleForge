@@ -40,8 +40,7 @@ KindleTweaks project suggestions? Tweak suggestions? Feature requests? Check out
 
 ## Special Thanks
 
-- Penguins184, author
-- Kurizu, Illusion help & app image
+- [Kurizu](https://ko-fi.com/kurizu), Illusion help & app image
 - Gingrspacecadet, inspiration & repository help
 - Clint, event & KFPM troubleshooting, scroll help
 - Dammit Jeff, Gambatte-K2 & KOReader icons
