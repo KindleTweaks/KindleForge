@@ -44,4 +44,4 @@ KindleTweaks project suggestions? Tweak suggestions? Feature requests? Check out
 - Gingrspacecadet, inspiration & repository help
 - Clint, event & KFPM troubleshooting, scroll help
 - Dammit Jeff, Gambatte-K2 & KOReader icons
-- MCdragonmasters, ABI differentiation & tweak support
+- MCdragonmasters/ThatPotatoDev, ABI differentiation & tweak support
