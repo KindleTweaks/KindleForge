@@ -85,13 +85,22 @@ window.addEventListener("mousewheel", function(e) {
 var apps = [];
 var lock = false;
 
+var localABI = "";
+
 function _fetch(url, cb) {
   var xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4 && xhr.status === 200) {
       try {
-        apps = JSON.parse(xhr.responseText);
+        var tempApps = JSON.parse(xhr.responseText);
+        for (var i = 0; i < tempApps.length; i++) {
+          var app = tempApps[i];
+          var supported = app.ABI || ["sf", "hf"];
+          if (supported.indexOf(localABI) !== -1) {
+            apps.push(app);
+          }
+        }
         if (cb) cb();
         else init();
       } catch (e) {
@@ -285,6 +294,18 @@ function render(installed) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("status").innerText = "pre send msg";
+  (window.kindle || top.kindle).messaging.receiveMessage("ABI", function(eventType, ABI) {
+    localABI = ABI;
+  });
+  setTimeout(function() {
+    (window.kindle || top.kindle).messaging.sendStringMessage(
+      "com.kindlemodding.utild",
+      "runCMD",
+      "/var/local/mesquite/KindleForge/binaries/KFPM -abi"
+    );
+  }, 10);
+  
   _fetch(
     "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
   );
