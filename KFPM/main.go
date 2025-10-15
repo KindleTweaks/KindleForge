@@ -111,7 +111,7 @@ func main() {
 	case "-abi":
 		ABI := fetchABI()
 		fmt.Printf("[KFPM] ABI: %s\n", ABI)
-		setStatus("ABI", ABI)
+		setStatus("deviceABI", ABI)
 
 	default:
 		fmt.Println("Unknown Option:", args[0])
@@ -271,9 +271,11 @@ func isInstalled(id string) bool {
 	return false
 }
 
-func setStatus(prop, status string) {
-	cmd := exec.Command(fmt.Sprintf(`lipc-set-prop xyz.penguins184.kindleforge %s -s "%s"`, prop, status))
-	cmd.Run()
+func setStatus(prop string, status string) {
+	exec.Command(
+		"/bin/sh", "-c",
+		fmt.Sprintf(`lipc-set-prop xyz.penguins184.kindleforge %s -s "%s"`, prop, status),
+	).Run()
 }
 
 func fetchABI() string {

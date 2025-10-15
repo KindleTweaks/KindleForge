@@ -100,6 +100,7 @@ function _fetch(url, cb) {
           if (supported.indexOf(localABI) !== -1) {
             apps.push(app);
           }
+          
         }
         if (cb) cb();
         else init();
@@ -294,10 +295,12 @@ function render(installed) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById("status").innerText = "pre send msg";
-  (window.kindle || top.kindle).messaging.receiveMessage("ABI", function(eventType, ABI) {
+
+  (window.kindle || top.kindle).messaging.receiveMessage("deviceABI", function(eventType, ABI) {
     localABI = ABI;
+    document.getElementById("abi-status").innerText = "ABI: " + ABI;
   });
+
   setTimeout(function() {
     (window.kindle || top.kindle).messaging.sendStringMessage(
       "com.kindlemodding.utild",
@@ -309,5 +312,5 @@ document.addEventListener("DOMContentLoaded", function() {
   _fetch(
     "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
   );
-  document.getElementById("status").innerText = "JS Working!";
+  document.getElementById("js-status").innerText = "JS working!";
 });
