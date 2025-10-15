@@ -41,7 +41,7 @@ KindleTweaks project suggestions? Tweak suggestions? Feature requests? Check out
 ## Special Thanks
 
 - [Kurizu](https://ko-fi.com/kurizu), Illusion help & app image
-- Gingrspacecadet, inspiration & repository help
+- Gingrspacecadet, KFPM, inspiration & repository help
 - Clint, event & KFPM troubleshooting, scroll help
 - Dammit Jeff, Gambatte-K2 & KOReader icons
-- MCdragonmasters/ThatPotatoDev, ABI differentiation & tweak support
+- ThatPotatoDev, ABI differentiation & tweak support
