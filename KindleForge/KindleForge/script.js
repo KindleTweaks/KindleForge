@@ -82,7 +82,7 @@ window.addEventListener("mousewheel", function(e) {
   else if (e.wheelDeltaY < 0) next();
 });
 
-var apps = [];
+var pkgs = [];
 var lock = false;
 
 var localABI = "";
@@ -93,12 +93,12 @@ function _fetch(url, cb) {
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4 && xhr.status === 200) {
       try {
-        var tempApps = JSON.parse(xhr.responseText);
-        for (var i = 0; i < tempApps.length; i++) {
-          var app = tempApps[i];
-          var supported = app.ABI || ["sf", "hf"];
+        var tempPkgs = JSON.parse(xhr.responseText);
+        for (var i = 0; i < tempPkgs.length; i++) {
+          var pkg = tempPkgs[i];
+          var supported = pkg.ABI || ["sf", "hf"];
           if (supported.indexOf(localABI) !== -1) {
-            apps.push(app);
+            pkgs.push(pkg);
           }
           
         }
@@ -154,7 +154,7 @@ function render(installed) {
     x: "<svg class='icon' viewBox='0 0 24 24'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>"
   };
 
-  var container = document.getElementById("apps");
+  var container = document.getElementById("packages");
   while (container.firstChild) container.removeChild(container.firstChild);
 
   function button(name, pkgId, isInstalled) {
@@ -165,14 +165,14 @@ function render(installed) {
     btn.setAttribute("data-installed", isInstalled ? "true" : "false");
     btn.innerHTML =
       (isInstalled ? icons.x : icons.download) +
-      (isInstalled ? " Uninstall Application" : " Install Application");
+      (isInstalled ? " Uninstall Package" : " Install Package");
     return btn;
   }
 
-  for (var i = 0; i < apps.length; i++) {
-    var app = apps[i];
-    var name = app.name || ("App" + i);
-    var pkgId = app.uri || app.Uri || app.name;
+  for (var i = 0; i < pkgs.length; i++) {
+    var pkg = pkgs[i];
+    var name = pkg.name || ("Package" + i);
+    var pkgId = pkg.uri || pkg.Uri || pkg.name;
     var isInstalled = installed.indexOf(pkgId) !== -1;
 
     var card = document.createElement("article");
@@ -186,11 +186,11 @@ function render(installed) {
 
     var h2 = document.createElement("h2");
     h2.className = "title";
-    h2.textContent = app.name;
+    h2.textContent = pkg.name;
 
     var pAuth = document.createElement("p");
     pAuth.className = "author";
-    pAuth.textContent = "by " + app.author;
+    pAuth.textContent = "by " + pkg.author;
 
     tBox.appendChild(h2);
     tBox.appendChild(pAuth);
@@ -198,7 +198,7 @@ function render(installed) {
 
     var pDesc = document.createElement("p");
     pDesc.className = "description";
-    pDesc.textContent = app.description;
+    pDesc.textContent = pkg.description;
 
     var btn = button(name, pkgId, isInstalled);
 
@@ -230,7 +230,7 @@ function render(installed) {
           setTimeout(function() {
             btn.innerHTML =
               (wasInstalled ? icons.x : icons.download) +
-              (wasInstalled ? " Uninstall Application" : " Install Application");
+              (wasInstalled ? " Uninstall Package" : " Install Package");
           }, 2000);
 
           setTimeout(function() {}, 50); //UI Update Time
@@ -249,7 +249,7 @@ function render(installed) {
 
         btn.offsetHeight; //Reflow
 
-        var eventName = wasInstalled ? "appUninstallStatus" : "appInstallStatus";
+        var eventName = wasInstalled ? "packageUninstallStatus" : "packageInstallStatus";
         (window.kindle || top.kindle).messaging.receiveMessage(
           eventName,
           function(eventType, data) {
@@ -263,8 +263,8 @@ function render(installed) {
               btn.innerHTML =
                 (wasInstalled ? icons.download : icons.x) +
                 (wasInstalled
-                  ? " Install Application"
-                  : " Uninstall Application");
+                  ? " Install Package"
+                  : " Uninstall Package");
             } else {
               btn.innerHTML =
                 icons.x +

@@ -30,11 +30,11 @@ var (
 )
 
 type Package struct {
-    Name        string   `json:"name"`
-    Uri         string   `json:"uri"`
-    Description string   `json:"description"`
-    Author      string   `json:"author"`
-    ABI         []string `json:"ABI"`
+    Name          string   `json:"name"`
+    Uri           string   `json:"uri"`
+    Description   string   `json:"description"`
+    Author        string   `json:"author"`
+    ABI           []string `json:"ABI"`
 }
 
 func main() {
@@ -67,17 +67,17 @@ func main() {
         }
 
         if !slices.Contains(pkg.ABI, fetchABI()) {
-            fmt.Println("[KFPM] Package Does Not Support Device ABI!")
+            fmt.Printf("[KFPM] Package '%s' Does Not Support Device ABI!\n", pkgId)
             return
         }
 
         if runScript(pkgId, "install", verbose) {
             fmt.Println("[KFPM] Install Success!")
             appendInstalled(pkgId)
-            setStatus("appInstallStatus", "success")
+            setStatus("packageInstallStatus", "success")
         } else {
             fmt.Println("[KFPM] Install Failure!")
-            setStatus("appInstallStatus", "failure")
+            setStatus("packageInstallStatus", "failure")
         }
 
     case "-r", "-u":
@@ -96,10 +96,10 @@ func main() {
         if runScript(pkg, "uninstall", verbose) {
             fmt.Println("[KFPM] Removal Success!")
             removeInstalled(pkg)
-            setStatus("appUninstallStatus", "success")
+            setStatus("packageUninstallStatus", "success")
         } else {
             fmt.Println("[KFPM] Removal Failure!")
-            setStatus("appUninstallStatus", "failure")
+            setStatus("packageUninstallStatus", "failure")
         }
 
     case "-l":
