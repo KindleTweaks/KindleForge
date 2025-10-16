@@ -32,7 +32,6 @@ var (
 type Package struct {
     Name          string   `json:"name"`
     Uri           string   `json:"uri"`
-    Dependencies  []string `json:"dependencies"`
     Description   string   `json:"description"`
     Author        string   `json:"author"`
     ABI           []string `json:"ABI"`
