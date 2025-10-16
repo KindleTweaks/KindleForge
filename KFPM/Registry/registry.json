@@ -89,5 +89,12 @@
         "description": "A Basic Minecraft Server (1.21.8)",
         "author": "P2R3, Gingrspacecadet",
         "ABI": ["hf", "sf"]
+    },
+    {
+        "name": "Gargoyle",
+        "uri": "Gargoyle",
+        "description": "A Text Adventure Interpreter",
+        "author": "Barna, Pete330",
+        "ABI": ["hf", "sf"]
     }
 ]
