@@ -1,19 +1,21 @@
 /*
-    KFPM
-    KindleForge Package Manager
+   KFPM
+   KindleForge Package Manager
 
-    Simple Package Installing Solution For KindleForge
+   Simple Package Installing Solution For KindleForge
 */
 
 package main
 
 import (
     "encoding/json"
+    "errors"
     "fmt"
     "io"
     "net/http"
     "os"
     "os/exec"
+    "slices"
     "strings"
 )
 
@@ -23,11 +25,16 @@ const (
     installedFile = "/mnt/us/.KFPM/installed.txt"
 )
 
+var (
+    registry = fetchRegistry()
+)
+
 type Package struct {
-    Name        string `json:"name"`
-    Uri         string `json:"uri"`
-    Description string `json:"description"`
-    Author      string `json:"author"`
+    Name        string   `json:"name"`
+    Uri         string   `json:"uri"`
+    Description string   `json:"description"`
+    Author      string   `json:"author"`
+    ABI         []string `json:"ABI"`
 }
 
 func main() {
@@ -46,18 +53,27 @@ func main() {
             fmt.Println("Oops! -i Requires A Package Name!")
             return
         }
-        pkg := args[1]
+        pkgId := args[1]
         verbose := len(args) > 2 && args[2] == "-v"
 
-        //Validate Package ID
-        if !validPackageID(pkg) {
+        pkg, err := getPackage(pkgId)
+        if err != nil {
             fmt.Println("[KFPM] Invalid Package ID!")
             return
         }
 
-        if runScript(pkg, "install", verbose) {
+        if len(pkg.ABI) == 0 {
+            pkg.ABI = []string{"sf", "hf"}
+        }
+
+        if !slices.Contains(pkg.ABI, fetchABI()) {
+            fmt.Println("[KFPM] Package Does Not Support Device ABI!")
+            return
+        }
+
+        if runScript(pkgId, "install", verbose) {
             fmt.Println("[KFPM] Install Success!")
-            appendInstalled(pkg)
+            appendInstalled(pkgId)
             setStatus("appInstallStatus", "success")
         } else {
             fmt.Println("[KFPM] Install Failure!")
@@ -92,6 +108,11 @@ func main() {
     case "-a":
         listAvailable()
 
+    case "-abi":
+        ABI := fetchABI()
+        fmt.Printf("[KFPM] ABI: %s\n", ABI)
+        setStatus("deviceABI", ABI)
+
     default:
         fmt.Println("Unknown Option:", args[0])
         help()
@@ -110,12 +131,12 @@ kfpm -a              Lists All Available Packages
 `)
 }
 
-//Ensure Data Directory Exists
+// Ensure Data Directory Exists
 func ensureInstalledDir() {
     os.MkdirAll("/mnt/us/.KFPM", 0755)
 }
 
-//Install/Uninstall Runners
+// Install/Uninstall Runners
 func runScript(pkg, action string, verbose bool) bool {
     url := fmt.Sprintf("%s%s/%s.sh", registryBase, pkg, action)
     cmd := exec.Command("/bin/sh", "-c", "curl -fSL --progress-bar "+url+" | sh")
@@ -129,7 +150,7 @@ func runScript(pkg, action string, verbose bool) bool {
     return err == nil
 }
 
-//Append Package To List
+// Append Package To List
 func appendInstalled(pkg string) {
     data, _ := os.ReadFile(installedFile)
     text := strings.TrimSpace(string(data))
@@ -155,7 +176,7 @@ func appendInstalled(pkg string) {
     f.WriteString(strings.TrimSpace(pkg) + "\n")
 }
 
-//Remove Package From List
+// Remove Package From List
 func removeInstalled(pkg string) {
     data, err := os.ReadFile(installedFile)
     if err != nil {
@@ -174,7 +195,7 @@ func removeInstalled(pkg string) {
     os.WriteFile(installedFile, []byte(strings.Join(out, "\n")+"\n"), 0644)
 }
 
-//List Installed Packages
+// List Installed Packages
 func listInstalled() {
     data, err := os.ReadFile(installedFile)
     if err != nil || len(strings.TrimSpace(string(data))) == 0 {
@@ -192,9 +213,9 @@ func listInstalled() {
     }
 }
 
-//List Available Packages From Remote
+// List Available Packages From Remote
 func listAvailable() {
-    pkgs := fetchRegistry()
+    pkgs := registry
     if pkgs == nil {
         return
     }
@@ -205,10 +226,11 @@ func listAvailable() {
         fmt.Printf("    - Description: %s\n", p.Description)
         fmt.Printf("    - Author: %s\n", p.Author)
         fmt.Printf("    - ID: %s\n\n", p.Uri)
+        fmt.Printf("    - ABI: %s\n\n", p.ABI)
     }
 }
 
-//Helpers
+// Helpers
 func fetchRegistry() []Package {
     resp, err := http.Get(registryURL)
     if err != nil {
@@ -226,17 +248,13 @@ func fetchRegistry() []Package {
     return pkgs
 }
 
-func validPackageID(id string) bool {
-    pkgs := fetchRegistry()
-    if pkgs == nil {
-        return false
-    }
-    for _, p := range pkgs {
+func getPackage(id string) (Package, error) {
+    for _, p := range registry {
         if p.Uri == id {
-            return true
+            return p, nil
         }
     }
-    return false
+    return Package{}, errors.New("Package not found")
 }
 
 func isInstalled(id string) bool {
@@ -253,7 +271,16 @@ func isInstalled(id string) bool {
     return false
 }
 
-func setStatus(prop, status string) {
-    cmd := exec.Command(fmt.Sprintf(`lipc-set-prop xyz.penguins184.kindleforge %s -s "%s"`, prop, status))
-    cmd.Run()
+func setStatus(prop string, status string) {
+    exec.Command(
+        "/bin/sh", "-c",
+        fmt.Sprintf(`lipc-set-prop xyz.penguins184.kindleforge %s -s "%s"`, prop, status),
+    ).Run()
+}
+
+func fetchABI() string {
+    if _, err := os.Stat("/lib/ld-linux-armhf.so.3"); !os.IsNotExist(err) {
+        return "hf"
+    }
+    return "sf"
 }
