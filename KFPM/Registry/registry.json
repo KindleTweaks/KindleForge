@@ -96,5 +96,12 @@
         "description": "A Text Adventure Interpreter",
         "author": "Barna, Pete330",
         "ABI": ["hf", "sf"]
+    },
+    {
+        "name": "Textadept",
+        "uri": "Textadept",
+        "description": "A Desktop-Grade Text Editor For Kindle",
+        "author": "Barna",
+        "ABI": ["hf"]
     }
 ]
