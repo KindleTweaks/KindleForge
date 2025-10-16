@@ -168,7 +168,7 @@ func appendInstalled(pkg string) {
     }
     defer f.Close()
 
-    //Ensure Newline
+    // Ensure Newline
     if len(text) > 0 && !strings.HasSuffix(text, "\n") {
         f.WriteString("\n")
     }
@@ -254,7 +254,7 @@ func getPackage(id string) (Package, error) {
             return p, nil
         }
     }
-    return Package{}, errors.New("Package not found")
+    return Package{}, errors.New("Package Not Found!")
 }
 
 func isInstalled(id string) bool {

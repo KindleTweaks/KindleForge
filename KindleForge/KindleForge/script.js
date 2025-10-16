@@ -295,7 +295,6 @@ function render(installed) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-
   (window.kindle || top.kindle).messaging.receiveMessage("deviceABI", function(eventType, ABI) {
     localABI = ABI;
     document.getElementById("abi-status").innerText = "ABI: " + ABI;
@@ -312,5 +311,5 @@ document.addEventListener("DOMContentLoaded", function() {
   _fetch(
     "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
   );
-  document.getElementById("js-status").innerText = "JS working!";
+  document.getElementById("js-status").innerText = "JS Working!";
 });

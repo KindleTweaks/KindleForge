@@ -3,78 +3,91 @@
         "name": "Toggle ADs",
         "uri": "ToggleAds",
         "description": "Toggle Ads On/Off Scriptlet",
-        "author": "Marek & Penguins"
+        "author": "Marek & Penguins",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "KOReader",
         "uri": "KOReader",
         "description": "An E-Book Reader Application",
-        "author": "Hans-Werner"
+        "author": "Hans-Werner",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "kTerm",
         "uri": "kTerm",
         "description": "GTK+ Terminal Emulator for Kindle",
-        "author": "Bartek Fabiszewski"
+        "author": "Bartek Fabiszewski",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "KindleFetch",
         "uri": "KindleFetch",
         "description": "Download Books From Anna's Archive",
-        "author": "Justrals"
+        "author": "Justrals",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "Gambatte-K2",
         "uri": "GambatteK2",
         "description": "Upgraded Gameboy Emulator For Kindle",
-        "author": "CrazyElectron"
+        "author": "CrazyElectron",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "Gnome Games Suite",
         "uri": "GnomeGames",
         "description": "Gnome Games Suite For Kindle",
-        "author": "CrazyElectron"
+        "author": "CrazyElectron",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "KWordle",
         "uri": "KWordle",
         "description": "Wordle Clone For Kindle",
-        "author": "Kurizu"
+        "author": "Kurizu",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "KAnki",
         "uri": "KAnki",
         "description": "Anki Flashcard App For Kindle",
-        "author": "Kurizu"
+        "author": "Kurizu",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "JarLauncher",
         "uri": "JarLauncher",
         "description": "Java Installer and Jar Launcher",
-        "author": "ThatPotatoDev"
+        "author": "ThatPotatoDev",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "KPM",
         "uri": "KPM",
         "description": "A Kindle Package Manager",
-        "author": "Gingrspacecadet"
+        "author": "Gingrspacecadet",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "Kreate",
         "uri": "Kreate",
         "description": "A Simple Drawing Application For Kindle",
-        "author": "Foskya"
+        "author": "Foskya",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "SOX Media Player",
         "uri": "SOX",
         "description": "A Simple Bluetooth Audio Player For Kindle",
-        "author": "Dhdurgee"
+        "author": "Dhdurgee",
+        "ABI": ["hf", "sf"]
     },
     {
         "name": "KindleCraft",
         "uri": "KindleCraft",
-        "description": "A basic minecraft server (1.21.8)",
-        "author": "p2r3 & gingrspacecadet"
+        "description": "A Basic Minecraft Server (1.21.8)",
+        "author": "P2R3, Gingrspacecadet",
+        "ABI": ["hf", "sf"]
     }
 ]
