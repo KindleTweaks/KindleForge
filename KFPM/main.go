@@ -50,6 +50,8 @@ func main() {
         return
     }
 
+    verbose := len(args) > 2 && args[2] == "-v"
+
     switch args[0] {
     case "-i":
         if len(args) < 2 {
@@ -57,7 +59,6 @@ func main() {
             return
         }
         pkgId := args[1]
-        verbose := len(args) > 2 && args[2] == "-v"
         err := install(pkgId, verbose)
         if err != nil {
             fmt.Printf("[KFPM] %s\n", err.Error())
@@ -69,7 +70,6 @@ func main() {
             return
         }
         pkg := args[1]
-        verbose := len(args) > 2 && args[2] == "-v"
 
         if !isInstalled(pkg) {
             fmt.Println("[KFPM] Package ID Not Installed.")
@@ -122,7 +122,7 @@ var loopedDependencies = []string{}
 func install(pkgId string, verbose bool) error {
 
     if isInstalled(pkgId) {
-        fmt.Printf("[KFPM] Package '%s' Is Already Installed, Skipping \n", pkgId)
+        fmt.Printf("[KFPM] Package '%s' Is Already Installed, Skipping\n", pkgId)
         return nil
     }
 
