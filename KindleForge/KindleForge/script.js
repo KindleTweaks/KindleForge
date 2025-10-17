@@ -25,14 +25,14 @@ function update() {
               "id": "KFORGE_REFRESH",
               "state": "enabled",
               "handling": "notifyApp",
-              "label": "Refresh Packs",
+              "label": "Refresh Packages",
               "position": 0
             },
             {
               "id": "KFORGE_UPDATE",
               "state": "enabled",
               "handling": "notifyApp",
-              "label": "Update KF",
+              "label": "Update KForge",
               "position": 1
             }
           ],
@@ -48,22 +48,28 @@ function update() {
 window.kindle.appmgr.ongo = function() {
   update();
   window.kindle.messaging.receiveMessage("systemMenuItemSelected", function(eventType, id) {
-  if (id === "KFORGE_REFRESH") {
-    var container = document.getElementById("packages");
-    if (container) while (container.firstChild) container.removeChild(container.firstChild);
+    if (id === "KFORGE_REFRESH") {
+      var container = document.getElementById("packages");
+      if (container) while (container.firstChild) container.removeChild(container.firstChild);
 
-    pkgs = [];
-    _fetch(
-      "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/registry.json",
-      function() {
-        console.log("Refetched Registry!");
-      }
-    );
-  } else if (id === "KFORGE_UPDATE") {
-    window.kindle.messaging.sendStringMessage("com.kindlemodding.utild", "runCMD", "curl https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/Extra/update.sh | sh");
-  };
-});
+      pkgs = [];
 
+      _fetch(
+        "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/registry.json",
+        function() {
+          _file("file:///mnt/us/.KFPM/installed.txt").then(function(data) {
+            var joined = data.replace(/\d+\.\s*/g, "\n").trim();
+            var installed = joined.split(/\n+/).map(function(line) {
+              return line.replace(/^\d+\.\s*/, "").trim();
+            }).filter(Boolean);
+            render(installed);
+          });
+        }
+      );
+    } else if (id === "KFORGE_UPDATE") {
+      window.kindle.messaging.sendStringMessage("com.kindlemodding.utild", "runCMD", "curl https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/Extra/update.sh | sh");
+    };
+  });
 };
 
 var cards = [];

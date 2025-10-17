@@ -26,6 +26,9 @@ rm -rf "$TMPDIR"
 # Homescreen, Kill Mesquite
 
 lipc-set-prop com.lab126.appmgrd start app://com.lab126.booklet.home
+
+sleep 2
+
 killall mesquite
 
 exit 0
