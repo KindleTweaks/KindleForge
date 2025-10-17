@@ -237,82 +237,80 @@ function render(installed) {
 
   var buttons = container.querySelectorAll(".install-button");
   for (var j = 0; j < buttons.length; j++) {
-    (function(idx) {
-      buttons[idx].addEventListener("click", function() {
-        var btn = this;
-        var pkgId = btn.getAttribute("data-id");
-        var name = btn.getAttribute("data-name");
-        var wasInstalled = btn.getAttribute("data-installed") === "true";
+    buttons[j].addEventListener("click", function() {
+      var btn = this;
+      var pkgId = btn.getAttribute("data-id");
+      var name = btn.getAttribute("data-name");
+      var wasInstalled = btn.getAttribute("data-installed") === "true";
+    
+      if (lock) {
+        btn.innerHTML = icons.progress + " Another Operation In Progress...";
+        btn.blur(); btn.offsetHeight; //Blur & Reflow
 
-        if (lock) {
-          btn.innerHTML = icons.progress + " Another Operation In Progress...";
-          btn.blur(); btn.offsetHeight; //Blur & Reflow
-
+        requestAnimationFrame(function() {
           requestAnimationFrame(function() {
-            requestAnimationFrame(function() {
-              btn.offsetHeight; //Ensure Reflow
-            });
+            btn.offsetHeight; //Ensure Reflow
           });
-
-          setTimeout(function() {
-            btn.innerHTML =
-              (wasInstalled ? icons.x : icons.download) +
-              (wasInstalled ? " Uninstall Package" : " Install Package");
-          }, 2000);
-
-          setTimeout(function() {}, 50); //UI Update Time
-          return;
-        }
-
-        lock = true;
-        btn.disabled = true;
-
-        var action = wasInstalled ? "-r" : "-i";
-        btn.innerHTML =
-          icons.progress +
-          (wasInstalled ? " Uninstalling " : " Installing ") +
-          name +
-          "...";
-
-        btn.offsetHeight; //Reflow
-
-        var eventName = wasInstalled ? "packageUninstallStatus" : "packageInstallStatus";
-        (window.kindle || top.kindle).messaging.receiveMessage(
-          eventName,
-          function(eventType, data) {
-            lock = false;
-            btn.disabled = false;
-
-            var success =
-              typeof data === "string" && data.indexOf("success") !== -1;
-            if (success) {
-              btn.setAttribute("data-installed", wasInstalled ? "false" : "true");
-              btn.innerHTML =
-                (wasInstalled ? icons.download : icons.x) +
-                (wasInstalled
-                  ? " Install Package"
-                  : " Uninstall Package");
-            } else {
-              btn.innerHTML =
-                icons.x +
-                (wasInstalled
-                  ? " Failed to Uninstall "
-                  : " Failed to Install ") +
-                name +
-                "!";
-            }
-          }
-        );
-
+        });
+        
         setTimeout(function() {
-          (window.kindle || top.kindle).messaging.sendStringMessage(
-            "com.kindlemodding.utild",
-            "runCMD",
-            "/var/local/mesquite/KindleForge/binaries/KFPM " + action + " " + pkgId
-          );
-        }, 10); //Give Time For UI Update
-      });
-    })(j);
+          btn.innerHTML =
+            (wasInstalled ? icons.x : icons.download) +
+            (wasInstalled ? " Uninstall Package" : " Install Package");
+        }, 2000);
+        
+        setTimeout(function() {}, 50); //UI Update Time
+        return;
+      }
+    
+      lock = true;
+      btn.disabled = true;
+    
+      var action = wasInstalled ? "-r" : "-i";
+      btn.innerHTML =
+        icons.progress +
+        (wasInstalled ? " Uninstalling " : " Installing ") +
+        name +
+        "...";
+    
+      btn.offsetHeight; //Reflow
+    
+      var eventName = wasInstalled ? "packageUninstallStatus" : "packageInstallStatus";
+      (window.kindle || top.kindle).messaging.receiveMessage(
+        eventName,
+        function(eventType, data) {
+          lock = false;
+          btn.disabled = false;
+    
+          var success =
+            typeof data === "string" && data.indexOf("success") !== -1;
+          if (success) {
+            btn.setAttribute("data-installed", wasInstalled ? "false" : "true");
+            btn.innerHTML =
+              (wasInstalled ? icons.download : icons.x) +
+              (wasInstalled
+                ? " Install Package"
+                : " Uninstall Package");
+          } else {
+            btn.innerHTML =
+              icons.x +
+              (wasInstalled
+                ? " Failed to Uninstall "
+                : " Failed to Install ") +
+              name +
+              "!";
+          }
+        }
+      );
+    
+      setTimeout(function() {
+        (window.kindle || top.kindle).messaging.sendStringMessage(
+          "com.kindlemodding.utild",
+          "runCMD",
+          "/var/local/mesquite/KindleForge/binaries/KFPM " + action + " " + pkgId
+        );
+      }, 10); //Give Time For UI Update
+    });
   }
 
   cards = [];
