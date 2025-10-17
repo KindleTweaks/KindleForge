@@ -85,7 +85,23 @@ window.addEventListener("mousewheel", function(e) {
 var pkgs = [];
 var lock = false;
 
-var localABI = "";
+var deviceABI = "";
+
+function isPackageSupported(pkg, loopedDeps) {
+  if (loopedDeps.indexOf(pkg) !== -1) return false; // prevent infinite recursion
+  if (pkg.ABI.indexOf(deviceABI) === -1) return false;
+
+  loopedDeps = loopedDeps.slice();
+  loopedDeps.push(pkg);
+  
+  for (var i = 0; i < pkg.dependencies.length; i++) {
+    var dep = pkg.dependencies[i];
+    if (dep === pkg) return false;
+    var isSupported = isPackageSupported(dep, loopedDeps);
+    if (!isSupported) return false;
+  }
+  return true;
+}
 
 function _fetch(url, cb) {
   var xhr = new XMLHttpRequest();
@@ -95,12 +111,11 @@ function _fetch(url, cb) {
       try {
         var tempPkgs = JSON.parse(xhr.responseText);
         for (var i = 0; i < tempPkgs.length; i++) {
-          var pkg = tempPkgs[i];
-          var supported = pkg.ABI || ["sf", "hf"];
-          if (supported.indexOf(localABI) !== -1) {
-            pkgs.push(pkg);
-          }
+          var pkg = tempPkgs[i];      
           
+          if (!isPackageSupported(pkg, [])) continue;
+
+          pkgs.push(pkg);
         }
         if (cb) cb();
         else init();
@@ -296,7 +311,7 @@ function render(installed) {
 
 document.addEventListener("DOMContentLoaded", function() {
   (window.kindle || top.kindle).messaging.receiveMessage("deviceABI", function(eventType, ABI) {
-    localABI = ABI;
+    deviceABI = ABI;
     document.getElementById("abi-status").innerText = "ABI: " + ABI;
   });
 

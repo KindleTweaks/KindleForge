@@ -20,8 +20,8 @@ import (
 )
 
 const (
-    registryURL   = "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
-    registryBase  = "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/"
+    registryURL   = "https://raw.githubusercontent.com/ThatPotatoDev/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
+    registryBase  = "https://raw.githubusercontent.com/ThatPotatoDev/KindleForge/refs/heads/master/KFPM/Registry/"
     installedFile = "/mnt/us/.KFPM/installed.txt"
 )
 
@@ -117,7 +117,7 @@ func ensureInstalledDir() {
     os.MkdirAll("/mnt/us/.KFPM", 0755)
 }
 
-var loopedDependencies = []string{}
+var loopedDeps = []string{}
 
 func install(pkgId string, verbose bool) error {
 
@@ -126,7 +126,9 @@ func install(pkgId string, verbose bool) error {
         return nil
     }
 
-    if slices.Contains(loopedDependencies, pkgId) {
+    loopedDeps = append(loopedDeps, pkgId)
+
+    if slices.Contains(loopedDeps, pkgId) {
         return errors.New("Dependency Loop Detected, Aborting")
     }
 
@@ -144,19 +146,18 @@ func install(pkgId string, verbose bool) error {
         return fmt.Errorf("Package '%s' Does Not Support Device ABI!", pkgId)
     }
 
-    for _, dependencyId := range pkg.Dependencies {
-        if pkgId == dependencyId {
+    for _, depId := range pkg.Dependencies {
+        if pkgId == depId {
             return fmt.Errorf("Package '%s' Is Depending On Itself!", pkgId)
         }
-        dependencyErr := install(dependencyId, verbose)
-        if dependencyErr != nil {
-            return dependencyErr
+        depErr := install(depId, verbose)
+        if depErr != nil {
+            return depErr
         }
     }
 
     if runScript(pkgId, "install", verbose) {
         fmt.Printf("[KFPM] Successfully Installed '%s'!", pkgId)
-        loopedDependencies = append(loopedDependencies, pkgId)
         appendInstalled(pkgId)
         setStatus("packageInstallStatus", "success")
         return nil
@@ -290,17 +291,7 @@ func getPackage(id string) (Package, error) {
 }
 
 func isInstalled(id string) bool {
-    data, err := os.ReadFile(installedFile)
-    if err != nil {
-        return false
-    }
-    lines := strings.Split(strings.TrimSpace(string(data)), "\n")
-    for _, line := range lines {
-        if strings.TrimSpace(line) == id {
-            return true
-        }
-    }
-    return false
+    return slices.Contains(installed, id)
 }
 
 func getInstalled() []string {
