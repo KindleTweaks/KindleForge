@@ -83,21 +83,33 @@ window.addEventListener("mousewheel", function(e) {
 });
 
 var pkgs = [];
+var pkgIds = [];
 var lock = false;
 
 var deviceABI = "";
 
-function isPackageSupported(pkg, loopedDeps) {
-  if (loopedDeps.indexOf(pkg) !== -1) return false; // prevent infinite recursion
+function getPackage(pkgId, pkgsJson) {
+  for (var i = 0; i < pkgsJson.length; i++) {
+    var pkg = pkgsJson[i];
+    if (pkg.uri === pkgId) return pkg;
+  }
+  return null;
+}
+
+function isPackageSupported(pkgsJson, pkg, loopedDeps) {
+
+  if (loopedDeps.indexOf(pkg.uri) !== -1) return false;
   if (pkg.ABI.indexOf(deviceABI) === -1) return false;
 
   loopedDeps = loopedDeps.slice();
-  loopedDeps.push(pkg);
+  loopedDeps.push(pkg.uri);
   
-  for (var i = 0; i < pkg.dependencies.length; i++) {
-    var dep = pkg.dependencies[i];
-    if (dep === pkg) return false;
-    var isSupported = isPackageSupported(dep, loopedDeps);
+  var deps = pkg.dependencies || [];
+  for (var i = 0; i < deps.length; i++) {
+    var dep = getPackage(deps[i], pkgsJson);
+    if (dep == null) return false;
+    if (dep.uri === pkg.uri) return false;
+    var isSupported = isPackageSupported(pkgsJson, dep, loopedDeps);
     if (!isSupported) return false;
   }
   return true;
@@ -112,8 +124,8 @@ function _fetch(url, cb) {
         var tempPkgs = JSON.parse(xhr.responseText);
         for (var i = 0; i < tempPkgs.length; i++) {
           var pkg = tempPkgs[i];      
-          
-          if (!isPackageSupported(pkg, [])) continue;
+
+          if (!isPackageSupported(tempPkgs, pkg, [])) continue;
 
           pkgs.push(pkg);
         }
@@ -324,7 +336,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }, 10);
   
   _fetch(
-    "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
+    "https://raw.githubusercontent.com/ThatPotatoDev/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
   );
   document.getElementById("js-status").innerText = "JS Working!";
 });
