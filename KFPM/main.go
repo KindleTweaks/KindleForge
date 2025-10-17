@@ -59,7 +59,7 @@ func main() {
             return
         }
         pkgId := args[1]
-        err := install(pkgId, verbose)
+        err := install(pkgId, verbose, []string{})
         if err != nil {
             fmt.Printf("[KFPM] %s\n", err.Error())
         }
@@ -117,20 +117,18 @@ func ensureInstalledDir() {
     os.MkdirAll("/mnt/us/.KFPM", 0755)
 }
 
-var loopedDeps = []string{}
-
-func install(pkgId string, verbose bool) error {
+func install(pkgId string, verbose bool, loopedDeps []string) error {
 
     if isInstalled(pkgId) {
         fmt.Printf("[KFPM] Package '%s' Is Already Installed, Skipping\n", pkgId)
         return nil
     }
 
-    loopedDeps = append(loopedDeps, pkgId)
-
     if slices.Contains(loopedDeps, pkgId) {
         return errors.New("Dependency Loop Detected, Aborting")
     }
+
+    loopedDeps = append(loopedDeps, pkgId)
 
     pkg, err := getPackage(pkgId)
 
@@ -150,9 +148,8 @@ func install(pkgId string, verbose bool) error {
         if pkgId == depId {
             return fmt.Errorf("Package '%s' Is Depending On Itself!", pkgId)
         }
-        depErr := install(depId, verbose)
-        if depErr != nil {
-            return depErr
+        if err := install(depId, verbose, loopedDeps); err != nil {
+            return err
         }
     }
 
