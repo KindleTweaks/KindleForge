@@ -60,7 +60,7 @@ window.kindle.appmgr.ongo = function() {
       }
     );
   } else if (id === "KFORGE_UPDATE") {
-    //TODO
+    window.kindle.messaging.sendStringMessage("com.kindlemodding.utild", "runCMD", "curl https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/Extra/update.sh | sh");
   };
 });
 
