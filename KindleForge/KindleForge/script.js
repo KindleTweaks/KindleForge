@@ -112,7 +112,34 @@ window.addEventListener("mousewheel", function(e) {
 var pkgs = [];
 var lock = false;
 
-var localABI = "";
+var deviceABI = "";
+
+function getPackage(pkgId, pkgsJson) {
+  for (var i = 0; i < pkgsJson.length; i++) {
+    var pkg = pkgsJson[i];
+    if (pkg.uri === pkgId) return pkg;
+  }
+  return null;
+}
+
+function isPackageSupported(pkgsJson, pkg, loopedDeps) {
+
+  if (loopedDeps.indexOf(pkg.uri) !== -1) return false;
+  if (pkg.ABI.indexOf(deviceABI) === -1) return false;
+
+  loopedDeps = loopedDeps.slice();
+  loopedDeps.push(pkg.uri);
+  
+  var deps = pkg.dependencies || [];
+  for (var i = 0; i < deps.length; i++) {
+    var dep = getPackage(deps[i], pkgsJson);
+    if (dep == null) return false;
+    if (dep.uri === pkg.uri) return false;
+    var isSupported = isPackageSupported(pkgsJson, dep, loopedDeps);
+    if (!isSupported) return false;
+  }
+  return true;
+}
 
 function _fetch(url, cb) {
   var xhr = new XMLHttpRequest();
@@ -122,12 +149,11 @@ function _fetch(url, cb) {
       try {
         var tempPkgs = JSON.parse(xhr.responseText);
         for (var i = 0; i < tempPkgs.length; i++) {
-          var pkg = tempPkgs[i];
-          var supported = pkg.ABI || ["sf", "hf"];
-          if (supported.indexOf(localABI) !== -1) {
-            pkgs.push(pkg);
-          }
-          
+          var pkg = tempPkgs[i];      
+
+          if (!isPackageSupported(tempPkgs, pkg, [])) continue;
+
+          pkgs.push(pkg);
         }
         if (cb) cb();
         else init();
@@ -237,82 +263,93 @@ function render(installed) {
 
   var buttons = container.querySelectorAll(".install-button");
   for (var j = 0; j < buttons.length; j++) {
-    (function(idx) {
-      buttons[idx].addEventListener("click", function() {
-        var btn = this;
-        var pkgId = btn.getAttribute("data-id");
-        var name = btn.getAttribute("data-name");
-        var wasInstalled = btn.getAttribute("data-installed") === "true";
+    buttons[j].addEventListener("click", function() {
+      var btn = this;
+      var pkgId = btn.getAttribute("data-id");
+      var name = btn.getAttribute("data-name");
+      var wasInstalled = btn.getAttribute("data-installed") === "true";
+    
+      if (lock) {
+        btn.innerHTML = icons.progress + " Another Operation In Progress...";
+        btn.blur(); btn.offsetHeight; //Blur & Reflow
 
-        if (lock) {
-          btn.innerHTML = icons.progress + " Another Operation In Progress...";
-          btn.blur(); btn.offsetHeight; //Blur & Reflow
-
+        requestAnimationFrame(function() {
           requestAnimationFrame(function() {
-            requestAnimationFrame(function() {
-              btn.offsetHeight; //Ensure Reflow
-            });
+            btn.offsetHeight; //Ensure Reflow
           });
-
-          setTimeout(function() {
-            btn.innerHTML =
-              (wasInstalled ? icons.x : icons.download) +
-              (wasInstalled ? " Uninstall Package" : " Install Package");
-          }, 2000);
-
-          setTimeout(function() {}, 50); //UI Update Time
-          return;
-        }
-
-        lock = true;
-        btn.disabled = true;
-
-        var action = wasInstalled ? "-r" : "-i";
-        btn.innerHTML =
-          icons.progress +
-          (wasInstalled ? " Uninstalling " : " Installing ") +
-          name +
-          "...";
-
-        btn.offsetHeight; //Reflow
-
-        var eventName = wasInstalled ? "packageUninstallStatus" : "packageInstallStatus";
-        (window.kindle || top.kindle).messaging.receiveMessage(
-          eventName,
-          function(eventType, data) {
-            lock = false;
-            btn.disabled = false;
-
-            var success =
-              typeof data === "string" && data.indexOf("success") !== -1;
-            if (success) {
-              btn.setAttribute("data-installed", wasInstalled ? "false" : "true");
-              btn.innerHTML =
-                (wasInstalled ? icons.download : icons.x) +
-                (wasInstalled
-                  ? " Install Package"
-                  : " Uninstall Package");
-            } else {
-              btn.innerHTML =
-                icons.x +
-                (wasInstalled
-                  ? " Failed to Uninstall "
-                  : " Failed to Install ") +
-                name +
-                "!";
-            }
-          }
-        );
-
+        });
+        
         setTimeout(function() {
-          (window.kindle || top.kindle).messaging.sendStringMessage(
-            "com.kindlemodding.utild",
-            "runCMD",
-            "/var/local/mesquite/KindleForge/binaries/KFPM " + action + " " + pkgId
-          );
-        }, 10); //Give Time For UI Update
-      });
-    })(j);
+          btn.innerHTML =
+            (wasInstalled ? icons.x : icons.download) +
+            (wasInstalled ? " Uninstall Package" : " Install Package");
+        }, 2000);
+        
+        setTimeout(function() {}, 50); //UI Update Time
+        return;
+      }
+    
+      lock = true;
+      btn.disabled = true;
+    
+      var action = wasInstalled ? "-r" : "-i";
+      btn.innerHTML =
+        icons.progress +
+        (wasInstalled ? " Uninstalling " : " Installing ") +
+        name +
+        "...";
+      
+      btn.offsetHeight; //Reflow
+    
+      var eventName = wasInstalled ? "packageUninstallStatus" : "packageInstallStatus";
+      (window.kindle || top.kindle).messaging.receiveMessage(
+        eventName,
+        function(eventType, data) {
+          lock = false;
+          btn.disabled = false;
+    
+          var success =
+            typeof data === "string" && data.indexOf("success") !== -1;
+          if (success) {
+            btn.setAttribute("data-installed", wasInstalled ? "false" : "true");
+            btn.innerHTML =
+              (wasInstalled ? icons.download : icons.x) +
+              (wasInstalled
+                ? " Install Package"
+                : " Uninstall Package");
+            
+            // Update dependency buttons
+            if (!wasInstalled) {
+              var deps = getPackage(pkgId, pkgs).dependencies || [];
+              for (var i = 0; i < buttons.length; i++) {
+                var depBtn = buttons[i];
+                var depId = depBtn.getAttribute("data-id");
+                if (deps.indexOf(depId) === -1) continue;
+                depBtn.innerHTML = icons.x + " Uninstall Package";
+                btn.offsetHeight; //Reflow
+              }
+            }
+            
+          } else {
+            btn.innerHTML =
+              icons.x +
+              (wasInstalled
+                ? " Failed to Uninstall "
+                : " Failed to Install ") +
+              name +
+              "!";
+          }
+        }
+      );
+    
+      setTimeout(function() {
+        (window.kindle || top.kindle).messaging.sendStringMessage(
+          "com.kindlemodding.utild",
+          "runCMD",
+          "/var/local/mesquite/KindleForge/binaries/KFPM " + action + " " + pkgId
+        );
+      }, 10); //Give Time For UI Update
+    });
   }
 
   cards = [];
@@ -323,7 +360,7 @@ function render(installed) {
 
 document.addEventListener("DOMContentLoaded", function() {
   (window.kindle || top.kindle).messaging.receiveMessage("deviceABI", function(eventType, ABI) {
-    localABI = ABI;
+    deviceABI = ABI;
     document.getElementById("abi-status").innerText = "ABI: " + ABI;
   });
 

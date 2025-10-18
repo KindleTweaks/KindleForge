@@ -58,6 +58,7 @@
     {
         "name": "JarLauncher",
         "uri": "JarLauncher",
+        "dependencies": ["kTerm"],
         "description": "Java Installer and Jar Launcher",
         "author": "ThatPotatoDev",
         "ABI": ["hf", "sf"]

@@ -27,11 +27,14 @@ const (
 
 var (
     registry = fetchRegistry()
+    installed = getInstalled()
+    ABI = fetchABI()
 )
 
 type Package struct {
     Name          string   `json:"name"`
     Uri           string   `json:"uri"`
+    Dependencies  []string `json:"dependencies"`
     Description   string   `json:"description"`
     Author        string   `json:"author"`
     ABI           []string `json:"ABI"`
@@ -47,6 +50,8 @@ func main() {
         return
     }
 
+    verbose := len(args) > 2 && args[2] == "-v"
+
     switch args[0] {
     case "-i":
         if len(args) < 2 {
@@ -54,30 +59,9 @@ func main() {
             return
         }
         pkgId := args[1]
-        verbose := len(args) > 2 && args[2] == "-v"
-
-        pkg, err := getPackage(pkgId)
+        err := install(pkgId, verbose, []string{})
         if err != nil {
-            fmt.Println("[KFPM] Invalid Package ID!")
-            return
-        }
-
-        if len(pkg.ABI) == 0 {
-            pkg.ABI = []string{"sf", "hf"}
-        }
-
-        if !slices.Contains(pkg.ABI, fetchABI()) {
-            fmt.Printf("[KFPM] Package '%s' Does Not Support Device ABI!\n", pkgId)
-            return
-        }
-
-        if runScript(pkgId, "install", verbose) {
-            fmt.Println("[KFPM] Install Success!")
-            appendInstalled(pkgId)
-            setStatus("packageInstallStatus", "success")
-        } else {
-            fmt.Println("[KFPM] Install Failure!")
-            setStatus("packageInstallStatus", "failure")
+            fmt.Printf("[KFPM] %s\n", err.Error())
         }
 
     case "-r", "-u":
@@ -86,7 +70,6 @@ func main() {
             return
         }
         pkg := args[1]
-        verbose := len(args) > 2 && args[2] == "-v"
 
         if !isInstalled(pkg) {
             fmt.Println("[KFPM] Package ID Not Installed.")
@@ -109,7 +92,6 @@ func main() {
         listAvailable()
 
     case "-abi":
-        ABI := fetchABI()
         fmt.Printf("[KFPM] ABI: %s\n", ABI)
         setStatus("deviceABI", ABI)
 
@@ -122,13 +104,12 @@ func main() {
 func help() {
     fmt.Println(`KindleForge Package Manager
 ====================
-v1.0, made by Penguins184
+v1.1, made by Penguins184, ThatPotatoDev
 
 kfpm -i <ID> [-v]    Installs Package
 kfpm -r/-u <ID> [-v] Removes/Uninstalls Package
 kfpm -l              Lists Installed Packages
-kfpm -a              Lists All Available Packages
-`)
+kfpm -a              Lists All Available Packages`)
 }
 
 // Ensure Data Directory Exists
@@ -136,8 +117,52 @@ func ensureInstalledDir() {
     os.MkdirAll("/mnt/us/.KFPM", 0755)
 }
 
+func install(pkgId string, verbose bool, loopedDeps []string) error {
+
+    if isInstalled(pkgId) {
+        fmt.Printf("[KFPM] Package '%s' Is Already Installed, Skipping\n", pkgId)
+        return nil
+    }
+
+    if slices.Contains(loopedDeps, pkgId) {
+        return errors.New("Dependency Loop Detected, Aborting")
+    }
+
+    loopedDeps = append(loopedDeps, pkgId)
+
+    pkg, err := getPackage(pkgId)
+
+    if err != nil {
+        return fmt.Errorf("Invalid Package ID '%s'!", pkgId)
+    }
+
+    if len(pkg.ABI) == 0 {
+        pkg.ABI = []string{"sf", "hf"}
+    }
+
+    if !slices.Contains(pkg.ABI, ABI) {
+        return fmt.Errorf("Package '%s' Does Not Support Device ABI!", pkgId)
+    }
+
+    for _, depId := range pkg.Dependencies {
+        if err := install(depId, verbose, loopedDeps); err != nil {
+            return err
+        }
+    }
+
+    if runScript(pkgId, "install", verbose) {
+        fmt.Printf("[KFPM] Successfully Installed '%s'!\n", pkgId)
+        appendInstalled(pkgId)
+        setStatus("packageInstallStatus", "success")
+        return nil
+    } else {
+        setStatus("packageInstallStatus", "failure")
+        return errors.New("Failed to install!")
+    }
+}
+
 // Install/Uninstall Runners
-func runScript(pkg, action string, verbose bool) bool {
+func runScript(pkg string, action string, verbose bool) bool {
     url := fmt.Sprintf("%s%s/%s.sh", registryBase, pkg, action)
     cmd := exec.Command("/bin/sh", "-c", "curl -fSL --progress-bar "+url+" | sh")
 
@@ -174,6 +199,7 @@ func appendInstalled(pkg string) {
     }
 
     f.WriteString(strings.TrimSpace(pkg) + "\n")
+    installed = getInstalled()
 }
 
 // Remove Package From List
@@ -225,7 +251,8 @@ func listAvailable() {
         fmt.Printf("%d. %s\n", i+1, p.Name)
         fmt.Printf("    - Description: %s\n", p.Description)
         fmt.Printf("    - Author: %s\n", p.Author)
-        fmt.Printf("    - ID: %s\n\n", p.Uri)
+        fmt.Printf("    - ID: %s\n", p.Uri)
+        fmt.Printf("    - Dependencies: %s\n", p.Dependencies)
         fmt.Printf("    - ABI: %s\n\n", p.ABI)
     }
 }
@@ -258,17 +285,15 @@ func getPackage(id string) (Package, error) {
 }
 
 func isInstalled(id string) bool {
+    return slices.Contains(installed, id)
+}
+
+func getInstalled() []string {
     data, err := os.ReadFile(installedFile)
     if err != nil {
-        return false
+        return nil
     }
-    lines := strings.Split(strings.TrimSpace(string(data)), "\n")
-    for _, line := range lines {
-        if strings.TrimSpace(line) == id {
-            return true
-        }
-    }
-    return false
+    return strings.Split(strings.TrimSpace(string(data)), "\n")
 }
 
 func setStatus(prop string, status string) {
