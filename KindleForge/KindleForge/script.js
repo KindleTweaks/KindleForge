@@ -299,7 +299,7 @@ function render(installed) {
         (wasInstalled ? " Uninstalling " : " Installing ") +
         name +
         "...";
-    
+      
       btn.offsetHeight; //Reflow
     
       var eventName = wasInstalled ? "packageUninstallStatus" : "packageInstallStatus";
@@ -318,11 +318,12 @@ function render(installed) {
               (wasInstalled
                 ? " Install Package"
                 : " Uninstall Package");
+            
+            // Update dependency buttons
             if (!wasInstalled) {
-              var depBtns = document.getElementsByClassName("install-button");
               var deps = getPackage(pkgId, pkgs).dependencies;
-              for (var i = 0; i < depBtns.length; i++) {
-                var depBtn = depBtns[i];
+              for (var i = 0; i < buttons.length; i++) {
+                var depBtn = buttons[i];
                 var depId = depBtn.getAttribute("data-id");
                 if (deps.indexOf(depId) === -1) continue;
                 depBtn.innerHTML = icons.x + " Uninstall Package";
