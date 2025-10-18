@@ -145,9 +145,6 @@ func install(pkgId string, verbose bool, loopedDeps []string) error {
     }
 
     for _, depId := range pkg.Dependencies {
-        if pkgId == depId {
-            return fmt.Errorf("Package '%s' Is Depending On Itself!", pkgId)
-        }
         if err := install(depId, verbose, loopedDeps); err != nil {
             return err
         }
