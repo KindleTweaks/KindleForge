@@ -133,7 +133,7 @@ func install(pkgId string, verbose bool, loopedDeps []string) error {
     pkg, err := getPackage(pkgId)
 
     if err != nil {
-        return fmt.Errorf("[KFPM] Invalid Package ID '%s'!", pkgId)
+        return fmt.Errorf("Invalid Package ID '%s'!", pkgId)
     }
 
     if len(pkg.ABI) == 0 {
