@@ -321,7 +321,7 @@ function render(installed) {
             
             // Update dependency buttons
             if (!wasInstalled) {
-              var deps = getPackage(pkgId, pkgs).dependencies;
+              var deps = getPackage(pkgId, pkgs).dependencies || [];
               for (var i = 0; i < buttons.length; i++) {
                 var depBtn = buttons[i];
                 var depId = depBtn.getAttribute("data-id");
@@ -374,7 +374,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }, 10);
   
   _fetch(
-    "https://raw.githubusercontent.com/ThatPotatoDev/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
+    "https://raw.githubusercontent.com/KindleTweaks/KindleForge/refs/heads/master/KFPM/Registry/registry.json"
   );
   document.getElementById("js-status").innerText = "JS Working!";
 });
