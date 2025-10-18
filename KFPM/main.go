@@ -151,7 +151,7 @@ func install(pkgId string, verbose bool, loopedDeps []string) error {
     }
 
     if runScript(pkgId, "install", verbose) {
-        fmt.Printf("[KFPM] Successfully Installed '%s'!", pkgId)
+        fmt.Printf("[KFPM] Successfully Installed '%s'!\n", pkgId)
         appendInstalled(pkgId)
         setStatus("packageInstallStatus", "success")
         return nil
