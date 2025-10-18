@@ -291,6 +291,17 @@ function render(installed) {
               (wasInstalled
                 ? " Install Package"
                 : " Uninstall Package");
+            if (!wasInstalled) {
+              var depBtns = document.getElementsByClassName("install-button");
+              var deps = getPackage(pkgId, pkgs).dependencies;
+              for (var i = 0; i < depBtns.length; i++) {
+                var depBtn = depBtns[i];
+                var depId = depBtn.getAttribute("data-id");
+                if (deps.indexOf(depId) === -1) continue;
+                depBtn.innerHTML = " Uninstall Package";
+              }
+            }
+            
           } else {
             btn.innerHTML =
               icons.x +
