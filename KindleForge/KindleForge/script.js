@@ -110,7 +110,6 @@ window.addEventListener("mousewheel", function(e) {
 });
 
 var pkgs = [];
-var pkgIds = [];
 var lock = false;
 
 var deviceABI = "";
