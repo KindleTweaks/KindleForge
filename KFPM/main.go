@@ -104,7 +104,7 @@ func main() {
 func help() {
     fmt.Println(`KindleForge Package Manager
 ====================
-v1.0, made by Penguins184
+v1.1, made by Penguins184, ThatPotatoDev
 
 kfpm -i <ID> [-v]    Installs Package
 kfpm -r/-u <ID> [-v] Removes/Uninstalls Package
