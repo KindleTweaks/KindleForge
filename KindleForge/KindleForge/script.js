@@ -325,7 +325,8 @@ function render(installed) {
                 var depBtn = depBtns[i];
                 var depId = depBtn.getAttribute("data-id");
                 if (deps.indexOf(depId) === -1) continue;
-                depBtn.innerHTML = " Uninstall Package";
+                depBtn.innerHTML = icons.x + " Uninstall Package";
+                btn.offsetHeight; //Reflow
               }
             }
             
