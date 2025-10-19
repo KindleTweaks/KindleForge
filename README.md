@@ -27,9 +27,9 @@ KindleForge is a GUI Appstore for Kindles, allowing you to download & install tw
 
 ## Minimum Requirements
 
-- AdBreak, WinterBreak, or LanguageBreak
+- A jailbroken Kindle
 - Latest Universal Hotfix
-- Above the 5.6.1.1 firmware in the least
+- Your kindle must be above firmware 5.6.1.1
 - Both **hard-float and soft-float** kindles should work, but not all packages may support both architectures.
 
 ## Troubleshooting
