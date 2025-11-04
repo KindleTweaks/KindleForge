@@ -20,15 +20,14 @@ import (
 )
 
 const (
-	registryBase  = "https://kf.penguins184.xyz/"
 	installedFile = "/mnt/us/.KFPM/installed.txt"
 	registryFile  = "/mnt/us/.KFPM/repositories.txt"
 )
 
 var (
-	registry  = fetchAllRegistries()
-	installed = getInstalled()
-	ABI       = fetchABI()
+	registry  []Package
+	installed []string
+	ABI       string
 )
 
 type Package struct {
@@ -45,6 +44,9 @@ func main() {
 	ensureInstalledDir()
 	checkRepositoryFile()
 
+	registry = fetchAllRegistries()
+	installed = getInstalled()
+	ABI = fetchABI()
 	args := os.Args[1:]
 
 	if len(args) == 0 {
