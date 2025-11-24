@@ -342,9 +342,8 @@ function render(installed) {
 }
 
 function dataLinesToArray(data) {
-  var joined = data.replace(/\d+\.\s*/g, "\n").trim();
-  var list = joined.split(/\n+/).map(function(line) {
-    return line.replace(/^\d+\.\s*/, "").trim();
+  var list = data.split(/\n+/).map(function(line) {
+    return line.trim();
   }).filter(Boolean);
   return list;
 }
