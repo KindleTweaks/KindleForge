@@ -1,10 +1,7 @@
 #!/bin/sh
 # KindleForge Install Script for KindleGemini
 
-# --- CONFIGURATION ---
-# REPLACE THIS URL with your actual GitHub Release ZIP URL
 ZIP_URL="https://github.com/BaconWillRule/Kindle-Gemini/releases/download/Latest/KindleGemini.zip"
-# ---------------------
 
 APP_ID="com.baconwillrule.kindlegemini"
 APP_DIR="/var/local/mesquite/KindleGemini"
