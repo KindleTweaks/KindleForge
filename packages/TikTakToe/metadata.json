@@ -1,0 +1,9 @@
+{
+    "id": "tiktaktoe",
+    "name": "TikTakToe",
+    "version": "1.0.0",
+    "author": "User",
+    "description": "A simple CLI Tic-Tac-Toe game playable on e-ink displays.",
+    "platforms": ["linux", "kual"],
+    "license": "MIT"
+}
