@@ -1,0 +1,8 @@
+{
+    "name": "KindleGemini",
+    "uri": "KindleGemini",
+    "description": "Google Gemini Client for Kindle",
+    "author": "BaconWillRule",
+    "ABI": ["hf", "sf"],
+    "dependencies": []
+}
