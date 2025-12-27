@@ -45,6 +45,9 @@ function update() {
   window.kindle.messaging.sendMessage("com.lab126.chromebar", "configureChrome", chromebar);
 }
 
+const installedFileURL = "file:///mnt/us/.KFPM/installed.txt";
+const registriesFileURL = "file:///mnt/us/.KFPM/repositories.txt";
+
 window.kindle.appmgr.ongo = function() {
   update();
   window.kindle.messaging.receiveMessage("systemMenuItemSelected", function(eventType, id) {
@@ -55,18 +58,7 @@ window.kindle.appmgr.ongo = function() {
       pkgs = [];
       lock = false;
 
-      _fetch(
-        "https://kf.penguins184.xyz/registry.json",
-        function() {
-          _file("file:///mnt/us/.KFPM/installed.txt").then(function(data) {
-            var joined = data.replace(/\d+\.\s*/g, "\n").trim();
-            var installed = joined.split(/\n+/).map(function(line) {
-              return line.replace(/^\d+\.\s*/, "").trim();
-            }).filter(Boolean);
-            render(installed);
-          });
-        }
-      );
+      loadAllRegistries(registriesFileURL)
     } else if (id === "KFORGE_UPDATE") {
       window.kindle.messaging.sendStringMessage("com.kindlemodding.utild", "runCMD", "curl https://kf.penguins184.xyz/update.sh | sh");
     };
@@ -130,7 +122,7 @@ function isPackageSupported(pkgsJson, pkg, loopedDeps) {
 
   loopedDeps = loopedDeps.slice();
   loopedDeps.push(pkg.uri);
-  
+
   var deps = pkg.dependencies || [];
   for (var i = 0; i < deps.length; i++) {
     var dep = getPackage(deps[i], pkgsJson);
@@ -150,14 +142,13 @@ function _fetch(url, cb) {
       try {
         var tempPkgs = JSON.parse(xhr.responseText);
         for (var i = 0; i < tempPkgs.length; i++) {
-          var pkg = tempPkgs[i];      
+          var pkg = tempPkgs[i];
 
           if (!isPackageSupported(tempPkgs, pkg, [])) continue;
 
           pkgs.push(pkg);
         }
         if (cb) cb();
-        else init();
       } catch (e) {
         console.log("JSON Parse Failed", e);
       }
@@ -185,15 +176,6 @@ function _file(url) {
   });
 }
 
-function init() {
-  _file("file:///mnt/us/.KFPM/installed.txt").then(function(data) {
-    var joined = data.replace(/\d+\.\s*/g, "\n").trim();
-    var installed = joined.split(/\n+/).map(function(line) {
-      return line.replace(/^\d+\.\s*/, "").trim();
-    }).filter(Boolean);
-    render(installed);
-  });
-}
 
 function render(installed) {
   var icons = {
@@ -269,7 +251,7 @@ function render(installed) {
       var pkgId = btn.getAttribute("data-id");
       var name = btn.getAttribute("data-name");
       var wasInstalled = btn.getAttribute("data-installed") === "true";
-    
+
       if (lock) {
         btn.innerHTML = icons.progress + " Another Operation In Progress...";
         btn.blur(); btn.offsetHeight; //Blur & Reflow
@@ -279,36 +261,36 @@ function render(installed) {
             btn.offsetHeight; //Ensure Reflow
           });
         });
-        
+
         setTimeout(function() {
           btn.innerHTML =
             (wasInstalled ? icons.x : icons.download) +
             (wasInstalled ? " Uninstall Package" : " Install Package");
         }, 2000);
-        
-        setTimeout(function() {}, 50); //UI Update Time
+
+        setTimeout(function() { }, 50); //UI Update Time
         return;
       }
-    
+
       lock = true;
       btn.disabled = true;
-    
+
       var action = wasInstalled ? "-r" : "-i";
       btn.innerHTML =
         icons.progress +
         (wasInstalled ? " Uninstalling " : " Installing ") +
         name +
         "...";
-      
+
       btn.offsetHeight; //Reflow
-    
+
       var eventName = wasInstalled ? "packageUninstallStatus" : "packageInstallStatus";
       (window.kindle || top.kindle).messaging.receiveMessage(
         eventName,
         function(eventType, data) {
           lock = false;
           btn.disabled = false;
-    
+
           var success =
             typeof data === "string" && data.indexOf("success") !== -1;
           if (success) {
@@ -318,7 +300,7 @@ function render(installed) {
               (wasInstalled
                 ? " Install Package"
                 : " Uninstall Package");
-            
+
             // Update dependency buttons
             if (!wasInstalled) {
               var deps = getPackage(pkgId, pkgs).dependencies || [];
@@ -330,7 +312,7 @@ function render(installed) {
                 btn.offsetHeight; //Reflow
               }
             }
-            
+
           } else {
             btn.innerHTML =
               icons.x +
@@ -342,7 +324,7 @@ function render(installed) {
           }
         }
       );
-    
+
       setTimeout(function() {
         (window.kindle || top.kindle).messaging.sendStringMessage(
           "com.kindlemodding.utild",
@@ -359,10 +341,52 @@ function render(installed) {
   gCard(cIndex);
 }
 
+function dataLinesToArray(data) {
+  var list = data.split(/\n+/).map(function(line) {
+    return line.trim();
+  }).filter(Boolean);
+  return list;
+}
+
+function loadAllRegistries(fileUrl) {
+  _file(fileUrl).then(function(data) {
+    var repos = dataLinesToArray(data)
+
+    var numberOfRepos = repos.length;
+
+    if (numberOfRepos == 0) {
+      _file(installedFileURL).then(function(data) {
+        installed = dataLinesToArray(data);
+        render(installed);
+      });
+      console.error("0 repos!");
+      return;
+    }
+
+    var reposToLoad = numberOfRepos;
+
+    function oneRepoLoaded() {
+      reposToLoad--;
+      if (reposToLoad == 0) {
+        _file(installedFileURL).then(function(data) {
+          var installed = dataLinesToArray(data);
+          render(installed);
+        });
+      };
+    };
+    repos.forEach(function(url) {
+      _fetch(url + "/registry.json", oneRepoLoaded);
+    });
+
+  });
+};
+
 document.addEventListener("DOMContentLoaded", function() {
   (window.kindle || top.kindle).messaging.receiveMessage("deviceABI", function(eventType, ABI) {
     deviceABI = ABI;
     document.getElementById("abi-status").innerText = "ABI: " + ABI;
+
+    loadAllRegistries(registriesFileURL)
   });
 
   setTimeout(function() {
@@ -372,9 +396,6 @@ document.addEventListener("DOMContentLoaded", function() {
       "/var/local/mesquite/KindleForge/binaries/KFPM -abi"
     );
   }, 10);
-  
-  _fetch(
-    "https://kf.penguins184.xyz/registry.json"
-  );
+
   document.getElementById("js-status").innerText = "JS Working!";
 });
