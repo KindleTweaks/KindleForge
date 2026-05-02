@@ -5,7 +5,7 @@
 
 <a href='https://ko-fi.com/W7W31J9IS0' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
-*Like my work? Consider donating or just starring my repo! :)*
+*Like [my](https://penguins184.xyz/) work? Consider donating or just starring my repo! :)*
 
 KindleForge is a GUI Appstore for Kindles, allowing you to download & install tweaks & applications such as KOReader directly on-device, without having to keep copying files locally.
 
