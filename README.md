@@ -1,5 +1,8 @@
 # KindleForge 📦
 
+> [!CAUTION]
+> KindleForge is under **maintenance mode**. It will need to be re-written using KPM in the backend. If you are using `hdnext`, an ABI error is expected and I am choosing not to fix it because it isn't ideal for use alongside KPM/the new jailbreak stack anyway. There's currently no real ETA.
+
 > [!NOTE]
 > Welcome To KindleForge 4! [Packages](https://github.com/KindleTweaks/Repository)
 
